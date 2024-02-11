@@ -5,6 +5,6 @@ public class ValidLink {
     }
 
     public static boolean isLinkNormal(String link) {
-        return link.startsWith("https://github.com/") || link.startsWith("https://stackoverflow.com/");
+        return link.startsWith("https://stackoverflow.com/") || link.startsWith("https://github.com/");
     }
 }
