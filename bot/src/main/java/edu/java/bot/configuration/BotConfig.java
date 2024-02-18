@@ -30,5 +30,4 @@ public class BotConfig {
         );
         return new MessageProcessor(commands);
     }
-
 }

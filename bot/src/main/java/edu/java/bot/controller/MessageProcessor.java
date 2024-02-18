@@ -28,6 +28,6 @@ public class MessageProcessor implements UserMessageProcessor {
         }
         log.info("User with name " + update.message().chat().username()
             + " successfully got response to unknown command");
-        return new SendMessage(update.message().chat().id(), "Unknown command!");
+        return new SendMessage(update.message().chat().id(), "Unknown command! Use /help to see all commands!");
     }
 }

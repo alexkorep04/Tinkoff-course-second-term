@@ -5,9 +5,11 @@ import com.pengrad.telegrambot.request.SendMessage;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
+import static edu.java.bot.service.DefaultLinkService.addLink;
 import static edu.java.bot.utils.ValidLink.isLinkNormal;
 
 @Log4j2
+
 public class TrackCommand implements Command {
     private static final String LINK = "Link ";
 
@@ -36,6 +38,11 @@ public class TrackCommand implements Command {
         }
         log.info(USER + update.message().chat().username()
             + " successfully got response to track command to page " + partsOfRequest.get(1));
-        return new SendMessage(update.message().chat().id(), LINK + partsOfRequest.get(1) + " is tracking!");
+        boolean isAdd = addLink(update.message().chat().id(), partsOfRequest.get(1));
+        if (!isAdd) {
+            return new SendMessage(update.message().chat().id(),
+                LINK + partsOfRequest.get(1) + " was already tracked, so it was not added!");
+        }
+        return new SendMessage(update.message().chat().id(), LINK + partsOfRequest.get(1) + " is tracking now!");
     }
 }
