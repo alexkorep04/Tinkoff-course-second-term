@@ -9,7 +9,6 @@ import static edu.java.bot.service.DefaultLinkService.addLink;
 import static edu.java.bot.utils.ValidLink.isLinkNormal;
 
 @Log4j2
-
 public class TrackCommand implements Command {
     private static final String LINK = "Link ";
 
@@ -32,16 +31,14 @@ public class TrackCommand implements Command {
             return new SendMessage(update.message().chat().id(), "Invalid format! Please use /track <URI>");
         }
         if (!isLinkNormal(partsOfRequest.get(1))) {
-            log.info(USER + update.message().chat().username() + " entered not correct URL " + partsOfRequest.get(1));
+            log.info(USER + update.message().chat().username() + " entered not correct URI " + partsOfRequest.get(1));
             return new
                 SendMessage(update.message().chat().id(), LINK + partsOfRequest.get(1) + " is not supported now!");
         }
         log.info(USER + update.message().chat().username()
             + " successfully got response to track command to page " + partsOfRequest.get(1));
-        boolean isAdd = addLink(update.message().chat().id(), partsOfRequest.get(1));
-        if (!isAdd) {
-            return new SendMessage(update.message().chat().id(),
-                LINK + partsOfRequest.get(1) + " was already tracked, so it was not added!");
+        if (update.message().chat().id() != null) {
+            addLink(update.message().chat().id(), partsOfRequest.get(1));
         }
         return new SendMessage(update.message().chat().id(), LINK + partsOfRequest.get(1) + " is tracking now!");
     }

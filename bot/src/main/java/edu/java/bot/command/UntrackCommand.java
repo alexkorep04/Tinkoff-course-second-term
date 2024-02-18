@@ -9,7 +9,6 @@ import static edu.java.bot.service.DefaultLinkService.deleteLink;
 import static edu.java.bot.utils.ValidLink.isLinkNormal;
 
 @Log4j2
-
 public class UntrackCommand implements Command {
 
     private static final String LINK = "Link ";
@@ -34,14 +33,14 @@ public class UntrackCommand implements Command {
         String link = partsOfRequest.get(1);
         if (!isLinkNormal(link)) {
             log.info(USER + update.message().chat().username()
-                + " entered not correct URL for untracking " + link);
+                + " entered not correct URI for untracking " + link);
             return new SendMessage(update.message().chat().id(), LINK + link + " is not supported now!");
         }
-        log.info(USER + update.message().chat().username() + " successfully got response to untrack command");
-        boolean isDelete = deleteLink(update.message().chat().id(), link);
-        if (!isDelete) {
-            return new SendMessage(update.message().chat().id(), LINK + link + " is not in list of tracked links! Use correct <link>");
+        if (update.message().chat().id() != null) {
+            deleteLink(update.message().chat().id(), link);
         }
+        log.info(USER + update.message().chat().username()
+            + " successfully got response to untrack command of page " + link);
         return new SendMessage(update.message().chat().id(), LINK + link + " is not tracked now!");
     }
 }

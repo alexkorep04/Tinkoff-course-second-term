@@ -7,9 +7,8 @@ import lombok.extern.log4j.Log4j2;
 import static edu.java.bot.service.DefaultLinkService.getAllLinksOfUser;
 
 @Log4j2
-
 public class ListCommand implements Command {
-
+    private static final String NO_LINKS = "No tracked links!";
 
     @Override
     public String command() {
@@ -28,6 +27,10 @@ public class ListCommand implements Command {
             return new SendMessage(update.message().chat().id(),
                 "Invalid format! To see all tracked links use /list");
         }
+        if (update.message().chat().id() == null) {
+            return new SendMessage(update.message().chat().id(),
+                NO_LINKS);
+        }
         Set<String> links = getAllLinksOfUser(update.message().chat().id());
         if (!links.isEmpty()) {
             log.info(USER + update.message().chat().username() + " have tracked links");
@@ -40,6 +43,6 @@ public class ListCommand implements Command {
         }
         log.info(USER + update.message().chat().username() + " does not have tracked links");
         return new SendMessage(update.message().chat().id(),
-                "No tracked links!");
+            NO_LINKS);
     }
 }

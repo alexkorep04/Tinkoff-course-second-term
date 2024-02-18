@@ -31,7 +31,7 @@ public class ListCommandTest {
         when(update.message().chat()).thenReturn(new Chat());
         SendMessage response = listCommand.handle(update);
 
-        assertThat("No tracked links! Bot is not able to support this operation now without DB!").isEqualTo(response.getParameters().get("text"));
+        assertThat("No tracked links!").isEqualTo(response.getParameters().get("text"));
     }
 
     @Test

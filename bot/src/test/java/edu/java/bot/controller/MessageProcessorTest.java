@@ -65,6 +65,6 @@ public class MessageProcessorTest {
         when(update.message().chat()).thenReturn(new Chat());
         SendMessage response = messageProcessor.process(update);
 
-        assertThat("Unknown command!").isEqualTo(response.getParameters().get("text"));
+        assertThat("Unknown command! Use /help to see all commands!").isEqualTo(response.getParameters().get("text"));
     }
 }

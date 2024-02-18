@@ -31,7 +31,7 @@ public class TrackCommandTest {
         when(update.message().chat()).thenReturn(new Chat());
         SendMessage response = trackCommand.handle(update);
 
-        assertThat("Link https://github.com/alexkorep04 is tracking!").isEqualTo(response.getParameters().get("text"));
+        assertThat("Link https://github.com/alexkorep04 is tracking now!").isEqualTo(response.getParameters().get("text"));
     }
 
     @Test
