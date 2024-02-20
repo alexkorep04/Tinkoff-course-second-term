@@ -21,6 +21,9 @@ public class MessageProcessor implements UserMessageProcessor {
 
     @Override
     public SendMessage process(Update update) {
+        if (update.message() == null) {
+            return null;
+        }
         for (Command command: commands) {
             if (command.supports(update)) {
                 return command.handle(update);
