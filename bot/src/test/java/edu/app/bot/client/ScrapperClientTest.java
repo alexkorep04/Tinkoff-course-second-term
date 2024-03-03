@@ -1,11 +1,13 @@
-package edu.java.scrapper.client;
+package edu.app.bot.client;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import edu.java.client.ScrapperClient;
-import edu.java.dto.request.AddLinkRequest;
-import edu.java.dto.request.RemoveLinkRequest;
-import edu.java.dto.response.LinkResponse;
-import edu.java.dto.response.ListsLinkResponse;
+import edu.java.bot.cllient.ScrapperClient;
+import edu.java.bot.dto.request.AddLinkRequest;
+import edu.java.bot.dto.request.RemoveLinkRequest;
+import edu.java.bot.dto.response.LinkResponse;
+import edu.java.bot.dto.response.ListsLinkResponse;
+import java.net.URI;
+import edu.java.bot.exception.NoResourceException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,7 +15,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
-import java.net.URI;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -31,7 +32,7 @@ public class ScrapperClientTest {
 
     @Before
     public void init() {
-        scrapperClient = new ScrapperClient();
+        scrapperClient = new ScrapperClient("http://localhost:8080");
     }
 
     @Test
@@ -142,15 +143,15 @@ public class ScrapperClientTest {
     public void testDeleteChatWhenItNotExists() {
         stubFor(delete(urlEqualTo("/tg-chat/1"))
             .willReturn(aResponse()
-                .withStatus(400)
+                .withStatus(404)
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .withBody("{\"description\":\"Wrong parameters!\"" +
-                    ",\"code\":\"400\"" +
+                .withBody("{\"description\":\"Link not found!\"" +
+                    ",\"code\":\"404\"" +
                     ",\"exceptionName\":\"edu.java.exception.NoChatException\"" +
                     ",\"exceptionMessage\":\"No such chat in database!\"" +
                     ",\"stackTrace\":[1]}")));
         Mono<String> responseMono = scrapperClient.deleteChat(1L);
-        Throwable throwable = assertThrows(RuntimeException.class, responseMono::block);
+        Throwable throwable = assertThrows(NoResourceException.class, responseMono::block);
 
         assertThat("No such chat in database!").isEqualTo(throwable.getMessage());
     }
@@ -327,17 +328,17 @@ public class ScrapperClientTest {
     @Test
     @DisplayName("Test delete link that not in database")
     public void testDeleteLinkThatDoesNotExist() {
-        stubFor(post(urlEqualTo("/links"))
+        stubFor(delete(urlEqualTo("/links"))
             .withHeader("Tg-Chat-Id", equalTo("1"))
             .willReturn(aResponse()
-                .withStatus(400)
+                .withStatus(404)
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .withBody("{\"description\":\"Wrong parameters!\"" +
-                    ",\"code\":\"400\"" +
-                    ",\"exceptionName\":\"edu.java.exception.NoLinkException\"" +
+                .withBody("{\"description\":\"Link not found!\"" +
+                    ",\"code\":\"404\"" +
+                    ",\"exceptionName\":\"edu.java.exception.NoResourceException\"" +
                     ",\"exceptionMessage\":\"No such link in database!\"" +
                     ",\"stackTrace\":[1]}")));
-        Mono<LinkResponse> responseMono = scrapperClient.addLink(1L, new AddLinkRequest(URI.create("string123")));
+        Mono<LinkResponse> responseMono = scrapperClient.deleteLink(1L, new RemoveLinkRequest(URI.create("string123")));
         Throwable throwable = assertThrows(RuntimeException.class, responseMono::block);
 
         assertThat("No such link in database!").isEqualTo(throwable.getMessage());

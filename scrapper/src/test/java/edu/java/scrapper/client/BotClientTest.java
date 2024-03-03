@@ -26,7 +26,7 @@ public class BotClientTest {
 
     @Before
     public void init() {
-        botClient = new BotClient();
+        botClient = new BotClient("http://localhost:8080");
     }
 
     @Test

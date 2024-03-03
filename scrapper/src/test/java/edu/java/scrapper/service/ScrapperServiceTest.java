@@ -3,8 +3,7 @@ package edu.java.scrapper.service;
 import edu.java.dto.response.LinkResponse;
 import edu.java.exception.ChatAlreadyExistsException;
 import edu.java.exception.LinkAlreadyExistsException;
-import edu.java.exception.NoChatException;
-import edu.java.exception.NoLinkException;
+import edu.java.exception.NoResourceException;
 import edu.java.service.DefaultScrapperService;
 import edu.java.service.ScrapperService;
 import org.junit.Before;
@@ -32,10 +31,10 @@ public class ScrapperServiceTest {
     @Test
     @DisplayName("Test delete chat")
     public void testDeleteChat() {
-        assertThrows(NoChatException.class, () -> scrapperService.deleteChat(1L));
+        assertThrows(NoResourceException.class, () -> scrapperService.deleteChat(1L));
         scrapperService.registerChat(1L);
         assertDoesNotThrow(() -> scrapperService.deleteChat(1L));
-        assertThrows(NoChatException.class, () -> scrapperService.deleteChat(1L));
+        assertThrows(NoResourceException.class, () -> scrapperService.deleteChat(1L));
     }
 
     @Test
@@ -54,7 +53,7 @@ public class ScrapperServiceTest {
         scrapperService.registerChat(1L);
         assertDoesNotThrow(() -> scrapperService.addLink(1L, URI.create("https://github.com/alexkorep04")));
         assertDoesNotThrow(() -> scrapperService.deleteLink(1L, URI.create("https://github.com/alexkorep04")));
-        assertThrows(NoLinkException.class, () -> scrapperService.deleteLink(1L, URI.create("https://github.com/alexkorep04")));
+        assertThrows(NoResourceException.class, () -> scrapperService.deleteLink(1L, URI.create("https://github.com/alexkorep04")));
         scrapperService.addLink(1L, URI.create("string"));
         LinkResponse linkResponse = scrapperService.deleteLink(1L, URI.create("string"));
         assertThat(linkResponse).isNotNull();

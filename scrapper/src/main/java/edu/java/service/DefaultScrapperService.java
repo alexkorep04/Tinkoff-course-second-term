@@ -4,7 +4,7 @@ import edu.java.dto.response.LinkResponse;
 import edu.java.exception.ChatAlreadyExistsException;
 import edu.java.exception.LinkAlreadyExistsException;
 import edu.java.exception.NoChatException;
-import edu.java.exception.NoLinkException;
+import edu.java.exception.NoResourceException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class DefaultScrapperService implements ScrapperService {
     @Override
     public void deleteChat(long id) {
         if (!database.containsKey(id)) {
-            throw new NoChatException(NO_CHAT);
+            throw new NoResourceException(NO_CHAT);
         }
         database.remove(id);
     }
@@ -72,6 +72,6 @@ public class DefaultScrapperService implements ScrapperService {
                 return linkResponse;
             }
         }
-        throw new NoLinkException(NO_LINK);
+        throw new NoResourceException(NO_LINK);
     }
 }

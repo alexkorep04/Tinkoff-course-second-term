@@ -1,15 +1,15 @@
-package edu.java.client;
+package edu.java.bot.cllient;
 
-import edu.java.dto.request.AddLinkRequest;
-import edu.java.dto.request.RemoveLinkRequest;
-import edu.java.dto.response.ApiErrorResponse;
-import edu.java.dto.response.LinkResponse;
-import edu.java.dto.response.ListsLinkResponse;
-import edu.java.entity.BaseURL;
-import edu.java.exception.ChatAlreadyExistsException;
-import edu.java.exception.LinkAlreadyExistsException;
-import edu.java.exception.NoChatException;
-import edu.java.exception.NoLinkException;
+import edu.java.bot.dto.request.AddLinkRequest;
+import edu.java.bot.dto.request.RemoveLinkRequest;
+import edu.java.bot.dto.response.ApiErrorResponse;
+import edu.java.bot.dto.response.LinkResponse;
+import edu.java.bot.dto.response.ListsLinkResponse;
+import edu.java.bot.entity.BaseURL;
+import edu.java.bot.exception.ChatAlreadyExistsException;
+import edu.java.bot.exception.LinkAlreadyExistsException;
+import edu.java.bot.exception.NoChatException;
+import edu.java.bot.exception.NoResourceException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -64,6 +64,8 @@ public class ScrapperClient {
                         return Mono.error(new NoChatException(errorResponse.getExceptionMessage()));
                     }
                 }))
+            .onStatus(HttpStatus.NOT_FOUND::equals, response -> response.bodyToMono(ApiErrorResponse.class)
+                .flatMap(errorResponse -> Mono.error(new NoResourceException(errorResponse.getExceptionMessage()))))
             .bodyToMono(String.class);
     }
 
@@ -94,14 +96,14 @@ public class ScrapperClient {
             .retrieve()
             .onStatus(HttpStatus.BAD_REQUEST::equals, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(errorResponse -> {
-                    if (NO_LINK_EXCEPTION.equals(errorResponse.getExceptionName())) {
-                        return Mono.error(new NoLinkException(errorResponse.getExceptionMessage()));
-                    } else if (METHOD_VALIDATION_EXCEPTION.equals(errorResponse.getExceptionName())) {
+                    if (METHOD_VALIDATION_EXCEPTION.equals(errorResponse.getExceptionName())) {
                         return Mono.error(new RuntimeException(INVALID_ID));
                     } else {
                         return Mono.error(new NoChatException(errorResponse.getExceptionMessage()));
                     }
                 }))
+            .onStatus(HttpStatus.NOT_FOUND::equals, response -> response.bodyToMono(ApiErrorResponse.class)
+                .flatMap(errorResponse -> Mono.error(new NoResourceException(errorResponse.getExceptionMessage()))))
             .bodyToMono(LinkResponse.class);
     }
 

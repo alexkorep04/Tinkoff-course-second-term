@@ -1,7 +1,7 @@
-package edu.java.service;
+package edu.java.bot.service;
 
-import edu.java.dto.request.LinkUpdateRequest;
-import edu.java.exception.UpdateAlreadyExistsException;
+import edu.java.bot.dto.request.LinkUpdateRequest;
+import edu.java.bot.exception.UpdateAlreadyExistsException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
-package edu.java.service;
+package edu.java.bot.service;
 
-import edu.java.dto.request.LinkUpdateRequest;
+import edu.java.bot.dto.request.LinkUpdateRequest;
 
 public interface BotService {
     void addNewUpdate(LinkUpdateRequest linkUpdateRequest);
