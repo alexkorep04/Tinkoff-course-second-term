@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum BaseURL {
     GITHUB("https://api.github.com"),
-    STACKOVERFLOW("https://api.stackexchange.com/2.3");
-
+    STACKOVERFLOW("https://api.stackexchange.com/2.3"),
+    LOCAL("http://localhost:8090");
     private final String url;
 }
