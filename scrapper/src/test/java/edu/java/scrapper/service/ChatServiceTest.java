@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -29,14 +30,13 @@ public class ChatServiceTest {
     public void testBadAdd(){
         ChatRepository chatRepository = mock(DefaultChatRepository.class);
         TgChatService tgChatService = new JdbcTgChatService(chatRepository);
-        doAnswer(invocation -> {
-            throw new DataIntegrityViolationException("");
-        }).when(chatRepository).add(1L);
+        doThrow(new DataIntegrityViolationException("")).when(chatRepository).add(1L);
         try {
             tgChatService.register(1L);
-        }catch (ChatAlreadyExistsException e){
+        } catch (ChatAlreadyExistsException e){
             assertThat("Chat is already registered!").isEqualTo(e.getMessage());
         }
+        verify(chatRepository).add(1L);
     }
 
     @Test
@@ -56,8 +56,9 @@ public class ChatServiceTest {
         when(chatRepository.remove(1L)).thenReturn(0);
         try {
             tgChatService.unregister(1L);
-        }catch (NoResourceException e){
+        } catch (NoResourceException e){
             assertThat("No such chat in database!").isEqualTo(e.getMessage());
         }
+        verify(chatRepository).remove(1L);
     }
 }

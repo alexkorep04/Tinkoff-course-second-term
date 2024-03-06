@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import static org.mockito.Mockito.mock;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -36,6 +37,10 @@ public class LinkServiceTest {
         Link response = jdbcLinkService.add(1L, uri);
 
         assertThat(expected).isEqualTo(response);
+
+        verify(chatRepository).findById(1L);
+        verify(linkRepository).findByChatIdAndUrl(1L, uri.toString());
+        verify(linkRepository).add(1L, uri.toString());
     }
 
     @Test
@@ -52,6 +57,8 @@ public class LinkServiceTest {
         assertThrows(NoChatException.class, () -> {
             jdbcLinkService.add(1L, uri);
         });
+
+        verify(chatRepository).findById(1L);
     }
 
     @Test
@@ -70,6 +77,9 @@ public class LinkServiceTest {
         assertThrows(LinkAlreadyExistsException.class, () -> {
             jdbcLinkService.add(1L, uri);
         });
+
+        verify(chatRepository).findById(1L);
+        verify(linkRepository).findByChatIdAndUrl(1L, uri.toString());
     }
 
     @Test
@@ -87,6 +97,10 @@ public class LinkServiceTest {
         Link response = jdbcLinkService.remove(1L, uri);
 
         assertThat(expected).isEqualTo(response);
+
+        verify(chatRepository).findById(1L);
+        verify(linkRepository).findByChatIdAndUrl(1L, uri.toString());
+        verify(linkRepository).remove(1L, uri.toString());
     }
 
     @Test
@@ -103,6 +117,8 @@ public class LinkServiceTest {
         assertThrows(NoChatException.class, () -> {
             jdbcLinkService.remove(1L, uri);
         });
+
+        verify(chatRepository).findById(1L);
     }
 
     @Test
@@ -119,6 +135,9 @@ public class LinkServiceTest {
         assertThrows(NoResourceException.class, () -> {
             jdbcLinkService.remove(1L, uri);
         });
+
+        verify(chatRepository).findById(1L);
+        verify(linkRepository).findByChatIdAndUrl(1L, uri.toString());
     }
 
     @Test
@@ -138,6 +157,9 @@ public class LinkServiceTest {
         assertThat(2).isEqualTo(response.size());
         assertThat(expected1).isEqualTo(response.getFirst());
         assertThat(expected2).isEqualTo(response.getLast());
+
+        verify(chatRepository).findById(1L);
+        verify(linkRepository).findAllLinksById(1L);
     }
 
     @Test
@@ -151,8 +173,9 @@ public class LinkServiceTest {
         when(chatRepository.findById(1L)).thenReturn(Optional.empty());
         when(linkRepository.findAllLinksById(1L)).thenReturn(List.of(link));
         assertThrows(NoChatException.class, () ->
-            {
-                jdbcLinkService.listAll(1L);
-            });
+                jdbcLinkService.listAll(1L)
+        );
+
+        verify(chatRepository).findById(1L);
     }
 }
