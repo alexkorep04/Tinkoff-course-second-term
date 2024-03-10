@@ -2,7 +2,7 @@ package edu.java.scrapper.repository;
 
 import edu.java.dto.Chat;
 import edu.java.repository.ChatRepository;
-import edu.java.repository.DefaultChatRepository;
+import edu.java.repository.jdbc.JdbcChatRepository;
 import edu.java.scrapper.IntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
         .username(POSTGRES.getUsername())
         .password(POSTGRES.getPassword())
         .build());
-    private final ChatRepository chatRepository = new DefaultChatRepository(jdbcTemplate);
+    private final ChatRepository chatRepository = new JdbcChatRepository(jdbcTemplate);
 
     @Test
     @Rollback

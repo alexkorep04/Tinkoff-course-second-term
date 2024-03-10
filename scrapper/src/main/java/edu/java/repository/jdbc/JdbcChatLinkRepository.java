@@ -1,6 +1,7 @@
-package edu.java.repository;
+package edu.java.repository.jdbc;
 
 import edu.java.dto.ChatLink;
+import edu.java.repository.ChatLinkRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class DefaultChatLinkRepository implements ChatLinkRepository {
+public class JdbcChatLinkRepository implements ChatLinkRepository {
     private final JdbcTemplate jdbcTemplate;
     private static final String CHAT = "chat_id";
     private static final String LINK = "link_id";

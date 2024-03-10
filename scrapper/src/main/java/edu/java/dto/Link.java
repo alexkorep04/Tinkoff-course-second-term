@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 public class Link {
     private long id;
     private String name;
+    private OffsetDateTime lastCheck;
     private OffsetDateTime lastUpdate;
 }

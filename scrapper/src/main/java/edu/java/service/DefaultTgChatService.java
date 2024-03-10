@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class JdbcTgChatService implements TgChatService {
+public class DefaultTgChatService implements TgChatService {
     private final ChatRepository chatRepository;
 
     @Override

@@ -1,6 +1,7 @@
-package edu.java.repository;
+package edu.java.repository.jdbc;
 
 import edu.java.dto.Chat;
+import edu.java.repository.ChatRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
-public class DefaultChatRepository implements ChatRepository {
+public class JdbcChatRepository implements ChatRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override

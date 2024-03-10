@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class JdbcLinkService implements LinkService {
+public class DefaultLinkService implements LinkService {
     private final LinkRepository linkRepository;
     private final ChatRepository chatRepository;
     private static final String NO_CHAT = "No such chat in database!";
