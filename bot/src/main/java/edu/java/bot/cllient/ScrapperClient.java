@@ -22,7 +22,6 @@ public class ScrapperClient {
     private final static String LINKS = "links";
     private final static String HEADER = "Tg-Chat-Id";
     private final static String INVALID_ID = "Invalid id!";
-    private final static String NO_LINK_EXCEPTION = "edu.java.exception.NoLinkException";
     private final static String LINK_EXISTS_EXCEPTION = "edu.java.exception.LinkAlreadyExistsException";
     private final static String METHOD_VALIDATION_EXCEPTION
         = "org.springframework.web.method.annotation.HandlerMethodValidationException";

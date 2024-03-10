@@ -38,7 +38,7 @@ public class StackOverflowLinkUpdater implements LinkUpdater {
             LinkUpdateRequest
                 linkUpdateRequest = new LinkUpdateRequest(link.getId(), URI.create(url),
                 "Update on link " + url, linkRepository.findChatsByLink(url));
-            botClient.sendUpdate(linkUpdateRequest);
+            botClient.sendUpdate(linkUpdateRequest).block();
             return 1;
         }
         return 0;
