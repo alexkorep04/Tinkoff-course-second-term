@@ -21,7 +21,6 @@ public class HelpCommand implements Command {
 
     @Override
     public SendMessage handle(Update update) {
-        log.info(USER + update.message().chat().id() + " turned the help command");
         log.info(USER + update.message().chat().username() + " turned the help command");
         if (update.message().text().split(" ").length != 1) {
             return new SendMessage(update.message().chat().id(),

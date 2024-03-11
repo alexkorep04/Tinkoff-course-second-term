@@ -3,10 +3,10 @@ package edu.java.bot.listener;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ParseMode;
-import java.util.List;
-import java.util.Optional;
 import edu.java.bot.executor.Executor;
 import edu.java.bot.processor.MessageProcessor;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

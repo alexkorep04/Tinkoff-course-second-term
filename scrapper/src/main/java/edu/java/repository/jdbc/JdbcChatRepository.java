@@ -27,10 +27,13 @@ public class JdbcChatRepository implements ChatRepository {
             .queryForList("SELECT link_id FROM chat_link WHERE chat_id = (?)", Long.class, id);
         jdbcTemplate.update("DELETE FROM chat_link WHERE chat_id = (?)", id);
         for (Long linkId: links) {
-            jdbcTemplate.update("DELETE FROM link WHERE link_id = (?)", linkId);
+            List<Long> chatsWithSameLink = jdbcTemplate
+                .queryForList("SELECT chat_id FROM chat_link WHERE link_id = (?)", Long.class, linkId);
+            if (chatsWithSameLink.isEmpty()) {
+                jdbcTemplate.update("DELETE FROM link WHERE link_id = (?)", linkId);
+            }
         }
-        int deletedRows = jdbcTemplate.update("DELETE FROM chat WHERE id = (?)", id);
-        return deletedRows;
+        return jdbcTemplate.update("DELETE FROM chat WHERE id = (?)", id);
     }
 
     @Override

@@ -22,9 +22,15 @@ public class JdbcLinkRepository implements LinkRepository {
     @Override
     @Transactional
     public Link add(long chatId, String linkName) {
-        jdbcTemplate.update("INSERT INTO link(link_name, last_update) VALUES (?, ?)",
-            linkName, OffsetDateTime.MIN);
-        long id = findAll().getLast().getId();
+        Optional<Link> link = findByName(linkName);
+        long id;
+        if (link.isEmpty()) {
+            jdbcTemplate.update("INSERT INTO link(link_name, last_update) VALUES (?, ?)",
+                linkName, OffsetDateTime.MIN);
+            id = findAll().getLast().getId();
+        } else {
+            id = link.get().getId();
+        }
         jdbcTemplate.update("INSERT INTO chat_link(chat_id, link_id) VALUES (?, ?)", chatId, id);
         return findById(id).get();
     }
@@ -35,7 +41,10 @@ public class JdbcLinkRepository implements LinkRepository {
         Optional<Link> link = findByChatIdAndUrl(chatId, linkName);
         long id = link.get().getId();
         jdbcTemplate.update("DELETE FROM chat_link WHERE chat_id = (?) AND link_id = (?)", chatId, id);
-        jdbcTemplate.update("DELETE FROM link WHERE link_id = (?)", id);
+        List<Long> chats = findChatsByLink(linkName);
+        if (chats.isEmpty()) {
+            jdbcTemplate.update("DELETE FROM link WHERE link_id = (?)", id);
+        }
         return link.get();
     }
 
@@ -79,6 +88,20 @@ public class JdbcLinkRepository implements LinkRepository {
         return Optional.of(links.getFirst());
     }
 
+    private Optional<Link> findByName(String linkName) {
+        List<Link> links = jdbcTemplate.query("SELECT * FROM link WHERE link_name = ?",
+            (resultSet, row) ->
+                new Link(resultSet.getLong(ID),
+                    resultSet.getString(NAME),
+                    resultSet.getObject(CHECK,
+                        OffsetDateTime.class),
+                    resultSet.getObject(UPDATE, OffsetDateTime.class)), linkName);
+        if (links.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(links.getFirst());
+    }
+
     @Override
     public Optional<Link> findById(long linkId) {
         List<Link> links = jdbcTemplate.query("SELECT * FROM link WHERE link_id = ?",
@@ -95,11 +118,13 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Override
+    @Transactional
     public void updateLastCheck(OffsetDateTime newCheck, String name) {
         jdbcTemplate.update("UPDATE link SET last_check = (?) WHERE link_name = (?)", newCheck, name);
     }
 
     @Override
+    @Transactional
     public void updateLastUpdate(OffsetDateTime update, String name) {
         jdbcTemplate.update("UPDATE link SET last_update = (?) WHERE link_name = (?)", update, name);
     }

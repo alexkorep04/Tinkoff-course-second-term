@@ -43,5 +43,6 @@ public class DefaultBot implements Bot {
 
     public void send(long chatId, String description) {
         telegramBot.execute(new SendMessage(chatId, description));
+        log.info(chatId);
     }
 }

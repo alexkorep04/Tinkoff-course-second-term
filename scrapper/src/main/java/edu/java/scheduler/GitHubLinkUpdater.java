@@ -30,7 +30,12 @@ public class GitHubLinkUpdater implements LinkUpdater {
         String[] parts = url.split("/");
         String account = parts[parts.length - 2];
         String repository = parts[parts.length - 1];
-        GitHubResponse gitHubResponse = gitHubClient.fetchRepository(account, repository).block();
+        GitHubResponse gitHubResponse;
+        try {
+            gitHubResponse = gitHubClient.fetchRepository(account, repository).block();
+        } catch (Exception e) {
+            return 0;
+        }
         linkRepository.updateLastCheck(OffsetDateTime.now(ZoneId.of("UTC")), url);
         if (OffsetDateTime.MIN.equals(link.getLastUpdate())) {
             linkRepository.updateLastUpdate(gitHubResponse.getUpdateTime(), url);

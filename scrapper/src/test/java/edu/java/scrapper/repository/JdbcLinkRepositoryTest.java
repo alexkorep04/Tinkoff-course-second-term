@@ -52,11 +52,11 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         List<ChatLink> chatLinks = chatLinkRepository.findAll();
 
         assertThat(1L).isEqualTo(chatLinks.getFirst().getChatId());
-        assertThat(8L).isEqualTo(chatLinks.getFirst().getLinkId());
+        assertThat(7L).isEqualTo(chatLinks.getFirst().getLinkId());
         assertThat(1L).isEqualTo(chatLinks.get(1).getChatId());
-        assertThat(9L).isEqualTo(chatLinks.get(1).getLinkId());
+        assertThat(8L).isEqualTo(chatLinks.get(1).getLinkId());
         assertThat(2L).isEqualTo(chatLinks.getLast().getChatId());
-        assertThat(10L).isEqualTo(chatLinks.getLast().getLinkId());
+        assertThat(9L).isEqualTo(chatLinks.getLast().getLinkId());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
@@ -69,16 +69,16 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     public void testFindAll() {
         chatRepository.add(1L);
         chatRepository.add(2L);
-        linkRepository.add(1L, "helloworld1");
-        linkRepository.add(1L, "helloworld2");
-        linkRepository.add(2L, "helloworld3");
+        linkRepository.add(1L, "helloworld4");
+        linkRepository.add(1L, "helloworld5");
+        linkRepository.add(2L, "helloworld6");
 
         List<Link> links = linkRepository.findAll();
 
         assertThat(3).isEqualTo(links.size());
-        assertThat("helloworld1").isEqualTo(links.getFirst().getName());
-        assertThat("helloworld2").isEqualTo(links.get(1).getName());
-        assertThat("helloworld3").isEqualTo(links.getLast().getName());
+        assertThat("helloworld4").isEqualTo(links.getFirst().getName());
+        assertThat("helloworld5").isEqualTo(links.get(1).getName());
+        assertThat("helloworld6").isEqualTo(links.getLast().getName());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
@@ -91,20 +91,20 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     public void testRemove() {
         chatRepository.add(1L);
         chatRepository.add(2L);
-        linkRepository.add(1L, "helloworld1");
-        linkRepository.add(1L, "helloworld2");
-        linkRepository.add(2L, "helloworld3");
-        linkRepository.remove(1L, "helloworld2");
+        linkRepository.add(1L, "helloworld7");
+        linkRepository.add(1L, "helloworld8");
+        linkRepository.add(2L, "helloworld9");
+        linkRepository.remove(1L, "helloworld8");
 
         List<Link> links = linkRepository.findAll();
-        assertThat("helloworld1").isEqualTo(links.getFirst().getName());
-        assertThat("helloworld3").isEqualTo(links.getLast().getName());
+        assertThat("helloworld7").isEqualTo(links.getFirst().getName());
+        assertThat("helloworld9").isEqualTo(links.getLast().getName());
 
         List<ChatLink> chatLinks = chatLinkRepository.findAll();
         assertThat(1L).isEqualTo(chatLinks.getFirst().getChatId());
-        assertThat(32L).isEqualTo(chatLinks.getFirst().getLinkId());
+        assertThat(28L).isEqualTo(chatLinks.getFirst().getLinkId());
         assertThat(2L).isEqualTo(chatLinks.get(1).getChatId());
-        assertThat(34L).isEqualTo(chatLinks.get(1).getLinkId());
+        assertThat(30L).isEqualTo(chatLinks.get(1).getLinkId());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
@@ -117,15 +117,15 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     public void testFindAllByChatId() {
         chatRepository.add(1L);
         chatRepository.add(2L);
-        linkRepository.add(1L, "helloworld1");
-        linkRepository.add(1L, "helloworld2");
-        linkRepository.add(2L, "helloworld3");
+        linkRepository.add(1L, "helloworld10");
+        linkRepository.add(1L, "helloworld11");
+        linkRepository.add(2L, "helloworld12");
 
         List<Link> links = linkRepository.findAllLinksById(1L);
 
         assertThat(2).isEqualTo(links.size());
-        assertThat("helloworld1").isEqualTo(links.getFirst().getName());
-        assertThat("helloworld2").isEqualTo(links.get(1).getName());
+        assertThat("helloworld10").isEqualTo(links.getFirst().getName());
+        assertThat("helloworld11").isEqualTo(links.get(1).getName());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
@@ -138,14 +138,14 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     public void testFindByChatIdAndUrl() {
         chatRepository.add(1L);
         chatRepository.add(2L);
-        linkRepository.add(1L, "helloworld1");
-        linkRepository.add(1L, "helloworld2");
-        linkRepository.add(2L, "helloworld3");
+        linkRepository.add(1L, "helloworld13");
+        linkRepository.add(1L, "helloworld14");
+        linkRepository.add(2L, "helloworld15");
 
-        Optional<Link> link = linkRepository.findByChatIdAndUrl(1L, "helloworld2");
+        Optional<Link> link = linkRepository.findByChatIdAndUrl(1L, "helloworld14");
 
         assertThat(link).isNotEmpty();
-        assertThat("helloworld2").isEqualTo(link.get().getName());
+        assertThat("helloworld14").isEqualTo(link.get().getName());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
@@ -158,14 +158,14 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     public void testFindById() {
         chatRepository.add(1L);
         chatRepository.add(2L);
-        linkRepository.add(1L, "helloworld1");
-        linkRepository.add(1L, "helloworld2");
-        linkRepository.add(2L, "helloworld3");
+        linkRepository.add(1L, "helloworld16");
+        linkRepository.add(1L, "helloworld17");
+        linkRepository.add(2L, "helloworld18");
 
-        Optional<Link> link = linkRepository.findById(26L);
+        Optional<Link> link = linkRepository.findById(23L);
 
         assertThat(link).isNotEmpty();
-        assertThat("helloworld2").isEqualTo(link.get().getName());
+        assertThat("helloworld17").isEqualTo(link.get().getName());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
@@ -179,12 +179,12 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         chatRepository.add(1L);
         chatRepository.add(2L);
         chatRepository.add(3L);
-        linkRepository.add(1L, "helloworld1");
-        linkRepository.add(1L, "helloworld2");
-        linkRepository.add(2L, "helloworld3");
-        linkRepository.add(3L, "helloworld1");
+        linkRepository.add(1L, "helloworld19");
+        linkRepository.add(1L, "helloworld20");
+        linkRepository.add(2L, "helloworld21");
+        linkRepository.add(3L, "helloworld19");
 
-        List<Long> chats = linkRepository.findChatsByLink("helloworld1");
+        List<Long> chats = linkRepository.findChatsByLink("helloworld19");
 
         assertThat(2).isEqualTo(chats.size());
         assertThat(1L).isEqualTo(chats.getFirst());
@@ -203,15 +203,15 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         chatRepository.add(1L);
         chatRepository.add(2L);
         chatRepository.add(3L);
-        linkRepository.add(1L, "helloworld1");
-        linkRepository.add(1L, "helloworld2");
-        linkRepository.add(2L, "helloworld3");
-        linkRepository.add(3L, "helloworld1");
+        linkRepository.add(1L, "helloworld22");
+        linkRepository.add(1L, "helloworld23");
+        linkRepository.add(2L, "helloworld24");
+        linkRepository.add(3L, "helloworld22");
 
         OffsetDateTime dateTime = OffsetDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC);
-        linkRepository.updateLastCheck(dateTime, "helloworld1");
-        Optional<Link> link1 = linkRepository.findByChatIdAndUrl(1L, "helloworld1");
-        Optional<Link> link2 = linkRepository.findByChatIdAndUrl(3L, "helloworld1");
+        linkRepository.updateLastCheck(dateTime, "helloworld22");
+        Optional<Link> link1 = linkRepository.findByChatIdAndUrl(1L, "helloworld22");
+        Optional<Link> link2 = linkRepository.findByChatIdAndUrl(3L, "helloworld22");
 
         assertThat(link1).isNotEmpty();
         assertThat(link2).isNotEmpty();
@@ -231,15 +231,15 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         chatRepository.add(1L);
         chatRepository.add(2L);
         chatRepository.add(3L);
-        linkRepository.add(1L, "helloworld1");
-        linkRepository.add(1L, "helloworld2");
-        linkRepository.add(2L, "helloworld3");
-        linkRepository.add(3L, "helloworld1");
+        linkRepository.add(1L, "helloworld25");
+        linkRepository.add(1L, "helloworld26");
+        linkRepository.add(2L, "helloworld27");
+        linkRepository.add(3L, "helloworld25");
 
         OffsetDateTime dateTime = OffsetDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC);
-        linkRepository.updateLastUpdate(dateTime, "helloworld1");
-        Optional<Link> link1 = linkRepository.findByChatIdAndUrl(1L, "helloworld1");
-        Optional<Link> link2 = linkRepository.findByChatIdAndUrl(3L, "helloworld1");
+        linkRepository.updateLastUpdate(dateTime, "helloworld25");
+        Optional<Link> link1 = linkRepository.findByChatIdAndUrl(1L, "helloworld25");
+        Optional<Link> link2 = linkRepository.findByChatIdAndUrl(3L, "helloworld25");
 
         assertThat(link1).isNotEmpty();
         assertThat(link2).isNotEmpty();
@@ -259,19 +259,19 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         chatRepository.add(1L);
         chatRepository.add(2L);
         chatRepository.add(3L);
-        linkRepository.add(1L, "helloworld1");
+        linkRepository.add(1L, "helloworld28");
         Thread.sleep(50);
-        linkRepository.add(1L, "helloworld2");
+        linkRepository.add(1L, "helloworld29");
         Thread.sleep(50);
-        linkRepository.add(2L, "helloworld3");
+        linkRepository.add(2L, "helloworld30");
         Thread.sleep(50);
-        linkRepository.add(3L, "helloworld1");
-        linkRepository.updateLastCheck(OffsetDateTime.MIN, "helloworld3");
+        linkRepository.add(3L, "helloworld28");
+        linkRepository.updateLastCheck(OffsetDateTime.MIN, "helloworld30");
         List<Link> links = linkRepository.findOldestLinks(2);
 
         assertThat(2).isEqualTo(links.size());
-        assertThat("helloworld3").isEqualTo(links.getFirst().getName());
-        assertThat("helloworld1").isEqualTo(links.getLast().getName());
+        assertThat("helloworld30").isEqualTo(links.getFirst().getName());
+        assertThat("helloworld28").isEqualTo(links.getLast().getName());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
