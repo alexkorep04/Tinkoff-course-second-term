@@ -1,0 +1,7 @@
+CREATE TABLE Link
+(
+    link_id BIGINT GENERATED ALWAYS AS IDENTITY,
+    link_name varchar(511) NOT NULL,
+    last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (link_id)
+);
