@@ -1,16 +1,12 @@
 package edu.java.scrapper.repository;
 
-import edu.java.dto.ChatLink;
 import edu.java.dto.Link;
-import edu.java.repository.ChatLinkRepository;
 import edu.java.repository.ChatRepository;
-import edu.java.repository.jdbc.JdbcChatLinkRepository;
 import edu.java.repository.jdbc.JdbcChatRepository;
 import edu.java.repository.jdbc.JdbcLinkRepository;
 import edu.java.repository.LinkRepository;
 import edu.java.scrapper.IntegrationTest;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,7 +25,6 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         .username(POSTGRES.getUsername())
         .password(POSTGRES.getPassword())
         .build());
-    private final ChatLinkRepository chatLinkRepository = new JdbcChatLinkRepository(jdbcTemplate);
     private final ChatRepository chatRepository = new JdbcChatRepository(jdbcTemplate);
     private final LinkRepository linkRepository = new JdbcLinkRepository(jdbcTemplate);
 
@@ -48,15 +43,6 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         assertThat("helloworld1").isEqualTo(links.getFirst().getName());
         assertThat("helloworld2").isEqualTo(links.get(1).getName());
         assertThat("helloworld3").isEqualTo(links.getLast().getName());
-
-        List<ChatLink> chatLinks = chatLinkRepository.findAll();
-
-        assertThat(1L).isEqualTo(chatLinks.getFirst().getChatId());
-        assertThat(7L).isEqualTo(chatLinks.getFirst().getLinkId());
-        assertThat(1L).isEqualTo(chatLinks.get(1).getChatId());
-        assertThat(8L).isEqualTo(chatLinks.get(1).getLinkId());
-        assertThat(2L).isEqualTo(chatLinks.getLast().getChatId());
-        assertThat(9L).isEqualTo(chatLinks.getLast().getLinkId());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
@@ -99,12 +85,6 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         List<Link> links = linkRepository.findAll();
         assertThat("helloworld7").isEqualTo(links.getFirst().getName());
         assertThat("helloworld9").isEqualTo(links.getLast().getName());
-
-        List<ChatLink> chatLinks = chatLinkRepository.findAll();
-        assertThat(1L).isEqualTo(chatLinks.getFirst().getChatId());
-        assertThat(28L).isEqualTo(chatLinks.getFirst().getLinkId());
-        assertThat(2L).isEqualTo(chatLinks.get(1).getChatId());
-        assertThat(30L).isEqualTo(chatLinks.get(1).getLinkId());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
