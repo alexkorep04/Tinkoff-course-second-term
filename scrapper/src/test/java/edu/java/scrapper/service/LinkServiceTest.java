@@ -31,7 +31,7 @@ public class LinkServiceTest {
         DefaultLinkService defaultLinkService = new DefaultLinkService(linkRepository, chatRepository);
         when(chatRepository.findById(1L)).thenReturn(Optional.of(new Chat()));
         when(linkRepository.findByChatIdAndUrl(1L, uri.toString())).thenReturn(Optional.empty());
-        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN);
+        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN, OffsetDateTime.MIN, 0, "GitHubLink");
         when(linkRepository.add(1L, uri.toString())).thenReturn(expected);
         Link response = defaultLinkService.add(1L, uri);
 
@@ -48,7 +48,7 @@ public class LinkServiceTest {
         LinkRepository linkRepository = mock(LinkRepository.class);
         ChatRepository chatRepository = mock(ChatRepository.class);
         URI uri = URI.create("https://github.com/alexkorep04");
-        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN);
+        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN, OffsetDateTime.MIN, 0, "GitHubLink");
         DefaultLinkService defaultLinkService = new DefaultLinkService(linkRepository, chatRepository);
         when(linkRepository.findByChatIdAndUrl(1L, uri.toString())).thenReturn(Optional.empty());
         when(linkRepository.add(1L, uri.toString())).thenReturn(expected);
@@ -66,11 +66,11 @@ public class LinkServiceTest {
         LinkRepository linkRepository = mock(LinkRepository.class);
         ChatRepository chatRepository = mock(ChatRepository.class);
         URI uri = URI.create("https://github.com/alexkorep04");
-        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN);
+        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN, OffsetDateTime.MIN, 0, "GitHubLink");
         DefaultLinkService defaultLinkService = new DefaultLinkService(linkRepository, chatRepository);
         when(chatRepository.findById(1L)).thenReturn(Optional.of(new Chat()));
         when(linkRepository.findByChatIdAndUrl(1L, uri.toString())).thenReturn(Optional.of(
-            new Link(1L, "https://github.com/alexkorep04", OffsetDateTime.MIN, OffsetDateTime.MIN)));
+            new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN, OffsetDateTime.MIN, 0, "GitHubLink")));
         when(linkRepository.add(1L, uri.toString())).thenReturn(expected);
 
         assertThrows(LinkAlreadyExistsException.class, () -> {
@@ -87,7 +87,7 @@ public class LinkServiceTest {
         LinkRepository linkRepository = mock(LinkRepository.class);
         ChatRepository chatRepository = mock(ChatRepository.class);
         URI uri = URI.create("https://github.com/alexkorep04");
-        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN);
+        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN, OffsetDateTime.MIN, 0, "GitHubLink");
         DefaultLinkService defaultLinkService = new DefaultLinkService(linkRepository, chatRepository);
         when(chatRepository.findById(1L)).thenReturn(Optional.of(new Chat()));
         when(linkRepository.findByChatIdAndUrl(1L, uri.toString())).thenReturn(Optional.of(
@@ -108,7 +108,7 @@ public class LinkServiceTest {
         LinkRepository linkRepository = mock(LinkRepository.class);
         ChatRepository chatRepository = mock(ChatRepository.class);
         URI uri = URI.create("https://github.com/alexkorep04");
-        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN);
+        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN, OffsetDateTime.MIN, 0, "GitHubLink");
         DefaultLinkService defaultLinkService = new DefaultLinkService(linkRepository, chatRepository);
         when(linkRepository.findByChatIdAndUrl(1L, uri.toString())).thenReturn(Optional.empty());
         when(linkRepository.remove(1L, uri.toString())).thenReturn(expected);
@@ -129,7 +129,7 @@ public class LinkServiceTest {
         DefaultLinkService defaultLinkService = new DefaultLinkService(linkRepository, chatRepository);
         when(chatRepository.findById(1L)).thenReturn(Optional.of(new Chat()));
         when(linkRepository.findByChatIdAndUrl(1L, uri.toString())).thenReturn(Optional.empty());
-        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN);
+        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN, OffsetDateTime.MIN, 0, "GitHubLink");
         when(linkRepository.remove(1L, uri.toString())).thenReturn(expected);
         assertThrows(NoResourceException.class, () -> {
             defaultLinkService.remove(1L, uri);
@@ -146,8 +146,8 @@ public class LinkServiceTest {
         ChatRepository chatRepository = mock(ChatRepository.class);
         URI uri1 = URI.create("https://github.com/alexkorep04");
         URI uri2 = URI.create("https://github.com/alexkorep04/Course");
-        Link expected1 = new Link(1L, uri1.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN);
-        Link expected2 = new Link(1L, uri2.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN);
+        Link expected1 = new Link(1L, uri1.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN, OffsetDateTime.MIN, 0, "GitHubLink");
+        Link expected2 = new Link(1L, uri2.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN, OffsetDateTime.MIN, 0, "GitHubLink");
         DefaultLinkService defaultLinkService = new DefaultLinkService(linkRepository, chatRepository);
         when(chatRepository.findById(1L)).thenReturn(Optional.of(new Chat()));
         when(linkRepository.findAllLinksById(1L)).thenReturn(List.of(expected1, expected2));
@@ -167,10 +167,10 @@ public class LinkServiceTest {
         LinkRepository linkRepository = mock(LinkRepository.class);
         ChatRepository chatRepository = mock(ChatRepository.class);
         URI uri = URI.create("https://github.com/alexkorep04");
-        Link link = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN);
+        Link expected = new Link(1L, uri.toString(), OffsetDateTime.MIN, OffsetDateTime.MIN, OffsetDateTime.MIN, 0, "GitHubLink");
         DefaultLinkService defaultLinkService = new DefaultLinkService(linkRepository, chatRepository);
         when(chatRepository.findById(1L)).thenReturn(Optional.empty());
-        when(linkRepository.findAllLinksById(1L)).thenReturn(List.of(link));
+        when(linkRepository.findAllLinksById(1L)).thenReturn(List.of(expected));
         assertThrows(NoChatException.class, () ->
                 defaultLinkService.listAll(1L)
         );

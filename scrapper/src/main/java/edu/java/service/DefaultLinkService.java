@@ -9,15 +9,22 @@ import edu.java.repository.LinkRepository;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class DefaultLinkService implements LinkService {
     private final LinkRepository linkRepository;
     private final ChatRepository chatRepository;
+
     private static final String NO_CHAT = "No such chat in database!";
+
+    public DefaultLinkService(@Qualifier("jooqLinkRepository") LinkRepository linkRepository,
+        @Qualifier("jooqChatRepository") ChatRepository chatRepository) {
+        this.linkRepository = linkRepository;
+        this.chatRepository = chatRepository;
+    }
+
 
     @Override
     public Link add(long tgChatId, URI url) {

@@ -5,15 +5,24 @@ import edu.java.repository.LinkRepository;
 import edu.java.scheduler.GitHubLinkUpdater;
 import edu.java.scheduler.StackOverflowLinkUpdater;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class DefaultLinkUpdaterService implements LinkUpdaterService {
     private final LinkRepository linkRepository;
     private final GitHubLinkUpdater gitHubLinkUpdater;
     private final StackOverflowLinkUpdater stackOverflowLinkUpdater;
+
+    public DefaultLinkUpdaterService(
+        @Qualifier("jooqLinkRepository") LinkRepository linkRepository,
+        GitHubLinkUpdater gitHubLinkUpdater,
+        StackOverflowLinkUpdater stackOverflowLinkUpdater
+    ) {
+        this.linkRepository = linkRepository;
+        this.gitHubLinkUpdater = gitHubLinkUpdater;
+        this.stackOverflowLinkUpdater = stackOverflowLinkUpdater;
+    }
 
     @SuppressWarnings("MagicNumber")
     @Override
@@ -21,11 +30,10 @@ public class DefaultLinkUpdaterService implements LinkUpdaterService {
         List<Link> links = linkRepository.findOldestLinks(3);
         int amount = 0;
         for (Link link: links) {
-            String[] parts = link.getName().split("//");
-            if (parts[1].startsWith("github.com")
+            if ("GitHubLink".equals(link.getType())
                 && gitHubLinkUpdater.supports(link.getName())) {
                 amount += gitHubLinkUpdater.update(link);
-            } else if (parts[1].startsWith("stackoverflow.com")
+            } else if ("StackOverflowLink".equals(link.getType())
                 && stackOverflowLinkUpdater.supports(link.getName())) {
                 amount += stackOverflowLinkUpdater.update(link);
             }
