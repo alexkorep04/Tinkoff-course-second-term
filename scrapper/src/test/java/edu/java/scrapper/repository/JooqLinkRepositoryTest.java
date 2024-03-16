@@ -2,14 +2,12 @@ package edu.java.scrapper.repository;
 
 import edu.java.dto.Link;
 import edu.java.repository.ChatRepository;
-import edu.java.repository.jdbc.JdbcChatRepository;
-import edu.java.repository.jdbc.JdbcLinkRepository;
 import edu.java.repository.LinkRepository;
+import edu.java.repository.jooq.JooqChatRepository;
+import edu.java.repository.jooq.JooqLinkRepository;
 import edu.java.scrapper.IntegrationTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
@@ -18,15 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class JdbcLinkRepositoryTest extends IntegrationTest {
-    private static final JdbcTemplate jdbcTemplate= new JdbcTemplate(DataSourceBuilder
-        .create()
-        .url(POSTGRES.getJdbcUrl())
-        .username(POSTGRES.getUsername())
-        .password(POSTGRES.getPassword())
-        .build());
-    private final ChatRepository chatRepository = new JdbcChatRepository(jdbcTemplate);
-    private final LinkRepository linkRepository = new JdbcLinkRepository(jdbcTemplate);
+public class JooqLinkRepositoryTest extends IntegrationTest {
+    private final ChatRepository chatRepository = new JooqChatRepository(dslContext);
+    private final LinkRepository linkRepository = new JooqLinkRepository(dslContext);
 
     @Test
     @Rollback
@@ -136,7 +128,25 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         chatRepository.remove(2L);
     }
 
+    @Test
+    @Rollback
+    @Transactional
+    @DisplayName("Test findById method")
+    public void testFindById() {
+        chatRepository.add(1L);
+        chatRepository.add(2L);
+        linkRepository.add(1L, "https://github.com/alexkorep04/Course");
+        linkRepository.add(1L, "https://github.com/alexkorep04/Tinkoff-course-second-term");
+        linkRepository.add(2L, "https://stackoverflow.com/questions/78155902/how-do-i-incrementally-migrate-from-osgi-to-a-spring-boot-monolith");
 
+        Optional<Link> link = linkRepository.findById(29L);
+        List<Link> links = linkRepository.findAll();
+        assertThat(link).isNotEmpty();
+        assertThat("https://github.com/alexkorep04/Tinkoff-course-second-term").isEqualTo(link.get().getName());
+
+        chatRepository.remove(1L);
+        chatRepository.remove(2L);
+    }
 
     @Test
     @Rollback
@@ -287,12 +297,11 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         linkRepository.add(2L, "https://stackoverflow.com/questions/78155902/how-do-i-incrementally-migrate-from-osgi-to-a-spring-boot-monolith");
         Thread.sleep(50);
         linkRepository.add(3L, "https://github.com/alexkorep04/Course");
-        linkRepository.updateLastCheck(OffsetDateTime.MIN, "https://stackoverflow.com/questions/78155902/how-do-i-incrementally-migrate-from-osgi-to-a-spring-boot-monolith");
         List<Link> links = linkRepository.findOldestLinks(2);
 
         assertThat(2).isEqualTo(links.size());
-        assertThat("https://stackoverflow.com/questions/78155902/how-do-i-incrementally-migrate-from-osgi-to-a-spring-boot-monolith").isEqualTo(links.getFirst().getName());
-        assertThat("https://github.com/alexkorep04/Course").isEqualTo(links.getLast().getName());
+        assertThat("https://github.com/alexkorep04/Tinkoff-course-second-term").isEqualTo(links.getLast().getName());
+        assertThat("https://github.com/alexkorep04/Course").isEqualTo(links.getFirst().getName());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);

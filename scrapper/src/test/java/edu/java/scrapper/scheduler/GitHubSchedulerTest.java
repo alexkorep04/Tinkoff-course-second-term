@@ -15,6 +15,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,9 +39,9 @@ public class GitHubSchedulerTest {
         LinkRepository linkRepository = mock(JdbcLinkRepository.class);
         BotClient botWebClient = mock(BotClient.class);
         Link link = new Link(1L, "https://github.com/alexkorep04/Course", OffsetDateTime.MIN,
-            OffsetDateTime.MIN);
+            null, null, 0, "GitHubLink");
         GitHubResponse gitHubResponse = new GitHubResponse(1, "Course", "https://github.com/alexkorep04/Course",
-            "1", OffsetDateTime.MIN, OffsetDateTime.MAX);
+            "1", OffsetDateTime.MAX, OffsetDateTime.MAX, OffsetDateTime.MAX, 0);
         String account = "alexkorep04";
         String repository = "Course";
         when(githubClient.fetchRepository(account, repository)).thenReturn(Mono.just(gitHubResponse));
@@ -51,15 +52,15 @@ public class GitHubSchedulerTest {
     }
 
     @Test
-    @DisplayName("Test update  method")
+    @DisplayName("Test update method")
     public void testNormalUpdate() {
         GitHubClient githubClient = mock(GitHubClient.class);
         LinkRepository linkRepository = mock(JdbcLinkRepository.class);
         BotClient botWebClient = mock(BotClient.class);
         Link link = new Link(1L, "https://github.com/alexkorep04/Course", OffsetDateTime.MIN,
-            OffsetDateTime.now());
+            OffsetDateTime.now(), OffsetDateTime.MIN, 0, "GitHubLink");
         GitHubResponse gitHubResponse = new GitHubResponse(1, "Course", "https://github.com/alexkorep04/Course",
-            "1", OffsetDateTime.MIN, OffsetDateTime.MAX.minusYears(19));
+            "1", OffsetDateTime.MIN, OffsetDateTime.MAX.minusYears(19), OffsetDateTime.MAX.minusYears(20), 1);
         String account = "alexkorep04";
         String repository = "Course";
         when(githubClient.fetchRepository(account, repository)).thenReturn(Mono.just(gitHubResponse));
@@ -67,9 +68,8 @@ public class GitHubSchedulerTest {
         when(botWebClient.sendUpdate(any())).thenReturn(Mono.just("Обновление обработано"));
         GitHubLinkUpdater gitHubLinkUpdater = new GitHubLinkUpdater(botWebClient, linkRepository, githubClient);
 
-        assertThat(1L).isEqualTo(gitHubLinkUpdater.update(link));
+        assertThat(2L).isEqualTo(gitHubLinkUpdater.update(link));
         verify(githubClient).fetchRepository(account, repository);
-        verify(linkRepository).findChatsByLink("https://github.com/alexkorep04/Course");
-        verify(botWebClient).sendUpdate(any());
+        verify(linkRepository, times(2)).findChatsByLink("https://github.com/alexkorep04/Course");
     }
 }

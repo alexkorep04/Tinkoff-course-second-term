@@ -19,7 +19,7 @@ public class ChatServiceTest {
     @Test
     @DisplayName("Test add")
     public void testGoodAdd(){
-        ChatRepository chatRepository = mock(JdbcChatRepository.class);
+        ChatRepository chatRepository = mock(ChatRepository.class);
         TgChatService tgChatService = new DefaultTgChatService(chatRepository);
         tgChatService.register(1L);
         verify(chatRepository).add(1L);

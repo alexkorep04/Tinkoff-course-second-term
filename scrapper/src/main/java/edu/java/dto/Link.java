@@ -13,4 +13,7 @@ public class Link {
     private String name;
     private OffsetDateTime lastCheck;
     private OffsetDateTime lastUpdate;
+    private OffsetDateTime lastCommit;
+    private int amountOfIssues;
+    private String type;
 }

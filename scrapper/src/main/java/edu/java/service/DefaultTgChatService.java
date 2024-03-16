@@ -3,20 +3,26 @@ package edu.java.service;
 import edu.java.exception.ChatAlreadyExistsException;
 import edu.java.exception.NoResourceException;
 import edu.java.repository.ChatRepository;
-import lombok.RequiredArgsConstructor;
+import org.jooq.exception.IntegrityConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class DefaultTgChatService implements TgChatService {
     private final ChatRepository chatRepository;
+
+    @Autowired
+    public DefaultTgChatService(@Qualifier("jooqChatRepository") ChatRepository chatRepository) {
+        this.chatRepository = chatRepository;
+    }
 
     @Override
     public void register(long tgChatId) {
         try {
             chatRepository.add(tgChatId);
-        } catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException | IntegrityConstraintViolationException e) {
             throw new ChatAlreadyExistsException("Chat is already registered!");
         }
     }

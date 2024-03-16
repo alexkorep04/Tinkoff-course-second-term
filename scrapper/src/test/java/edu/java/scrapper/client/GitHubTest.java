@@ -37,7 +37,9 @@ public class GitHubTest {
                     "\"html_url\": \"https://github.com/alexkorep04/TestingWithWire\", " +
                     "\"description\": \"Test program\", " +
                     "\"created_at\": \"2021-01-01T00:00:00Z\", " +
-                    "\"updated_at\": \"2022-01-01T00:00:00Z\"" +
+                    "\"updated_at\": \"2022-01-01T00:00:00Z\", " +
+                    "\"pushed_at\": \"2022-01-01T00:00:00Z\", " +
+                    "\"open_issues_count\": \"1\" " +
                     "}")));
         Mono<GitHubResponse> responseMono = gitHubClient.fetchRepository("alexkorep04", "TestingWithWire");
         GitHubResponse response = responseMono.block();
@@ -49,6 +51,8 @@ public class GitHubTest {
         assertThat("Test program").isEqualTo(response.getDescription());
         assertThat(OffsetDateTime.parse("2021-01-01T00:00:00Z")).isEqualTo(response.getCreateTime());
         assertThat(OffsetDateTime.parse("2022-01-01T00:00:00Z")).isEqualTo(response.getUpdateTime());
+        assertThat(OffsetDateTime.parse("2022-01-01T00:00:00Z")).isEqualTo(response.getPushedTime());
+        assertThat(1).isEqualTo(response.getIssuesCount());
     }
 
 }

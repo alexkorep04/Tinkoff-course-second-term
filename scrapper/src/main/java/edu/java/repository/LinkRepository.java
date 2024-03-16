@@ -22,6 +22,10 @@ public interface LinkRepository {
 
     void updateLastUpdate(OffsetDateTime update, String name);
 
+    void updateLastCommit(OffsetDateTime commit, String name);
+
+    void updateAmountOfIssues(int amountOfPR, String name);
+
     List<Long> findChatsByLink(String name);
 
     List<Link> findOldestLinks(int amount);

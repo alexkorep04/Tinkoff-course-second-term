@@ -19,4 +19,8 @@ public class GitHubResponse {
     private OffsetDateTime createTime;
     @JsonProperty("updated_at")
     private OffsetDateTime updateTime;
+    @JsonProperty("pushed_at")
+    private OffsetDateTime pushedTime;
+    @JsonProperty("open_issues_count")
+    private int issuesCount;
 }

@@ -16,6 +16,9 @@ public class JdbcLinkRepository implements LinkRepository {
     private final JdbcTemplate jdbcTemplate;
     private final static String NAME = "link_name";
     private final static String CHECK = "last_check";
+    private final static String COMMIT = "last_commit";
+    private final static String ISSUE = "amount_issues";
+    private final static String TYPE = "type";
     private final static String UPDATE = "last_update";
     private final static String ID = "link_id";
 
@@ -23,10 +26,16 @@ public class JdbcLinkRepository implements LinkRepository {
     @Transactional
     public Link add(long chatId, String linkName) {
         Optional<Link> link = findByName(linkName);
+        String type;
+        if (linkName.startsWith("https://github.com/")) {
+            type = "GitHubLink";
+        } else {
+            type = "StackOverflowLink";
+        }
         long id;
         if (link.isEmpty()) {
-            jdbcTemplate.update("INSERT INTO link(link_name, last_update) VALUES (?, ?)",
-                linkName, OffsetDateTime.MIN);
+            jdbcTemplate.update("INSERT INTO link(link_name, last_check ,type) VALUES (?, ?, ?)",
+                linkName, OffsetDateTime.now(), type);
             id = findAll().getLast().getId();
         } else {
             id = link.get().getId();
@@ -58,7 +67,11 @@ public class JdbcLinkRepository implements LinkRepository {
                     resultSet.getObject(CHECK,
                         OffsetDateTime.class),
                     resultSet.getObject(UPDATE,
-                        OffsetDateTime.class)), chatId);
+                        OffsetDateTime.class),
+                    resultSet.getObject(COMMIT,
+                        OffsetDateTime.class),
+                    resultSet.getInt(ISSUE),
+                    resultSet.getString(TYPE)), chatId);
     }
 
     @Override
@@ -69,7 +82,12 @@ public class JdbcLinkRepository implements LinkRepository {
                     resultSet.getString(NAME),
                     resultSet.getObject(CHECK,
                         OffsetDateTime.class),
-                    resultSet.getObject(UPDATE, OffsetDateTime.class)));
+                    resultSet.getObject(UPDATE,
+                        OffsetDateTime.class),
+                    resultSet.getObject(COMMIT,
+                        OffsetDateTime.class),
+                    resultSet.getInt(ISSUE),
+                    resultSet.getString(TYPE)));
     }
 
     @Override
@@ -81,7 +99,12 @@ public class JdbcLinkRepository implements LinkRepository {
                 resultSet.getString(NAME),
                 resultSet.getObject(CHECK,
                     OffsetDateTime.class),
-                resultSet.getObject(UPDATE, OffsetDateTime.class)), chatId, linkName);
+                resultSet.getObject(UPDATE,
+                    OffsetDateTime.class),
+                resultSet.getObject(COMMIT,
+                    OffsetDateTime.class),
+                resultSet.getInt(ISSUE),
+                resultSet.getString(TYPE)), chatId, linkName);
         if (links.isEmpty()) {
             return Optional.empty();
         }
@@ -95,7 +118,12 @@ public class JdbcLinkRepository implements LinkRepository {
                     resultSet.getString(NAME),
                     resultSet.getObject(CHECK,
                         OffsetDateTime.class),
-                    resultSet.getObject(UPDATE, OffsetDateTime.class)), linkName);
+                    resultSet.getObject(UPDATE,
+                        OffsetDateTime.class),
+                    resultSet.getObject(COMMIT,
+                        OffsetDateTime.class),
+                    resultSet.getInt(ISSUE),
+                    resultSet.getString(TYPE)), linkName);
         if (links.isEmpty()) {
             return Optional.empty();
         }
@@ -110,7 +138,12 @@ public class JdbcLinkRepository implements LinkRepository {
                     resultSet.getString(NAME),
                     resultSet.getObject(CHECK,
                         OffsetDateTime.class),
-                    resultSet.getObject(UPDATE, OffsetDateTime.class)), linkId);
+                    resultSet.getObject(UPDATE,
+                        OffsetDateTime.class),
+                    resultSet.getObject(COMMIT,
+                        OffsetDateTime.class),
+                    resultSet.getInt(ISSUE),
+                    resultSet.getString(TYPE)), linkId);
         if (links.isEmpty()) {
             return Optional.empty();
         }
@@ -130,6 +163,17 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Override
+    @Transactional
+    public void updateLastCommit(OffsetDateTime commit, String name) {
+        jdbcTemplate.update("UPDATE link SET last_commit = (?) WHERE link_name = (?)", commit, name);
+    }
+
+    @Override
+    public void updateAmountOfIssues(int amountOfIssues, String name) {
+        jdbcTemplate.update("UPDATE link SET amount_issues = (?) WHERE link_name = (?)", amountOfIssues, name);
+    }
+
+    @Override
     public List<Long> findChatsByLink(String name) {
         return jdbcTemplate.query("SELECT DISTINCT c.chat_id FROM chat_link c "
             + "JOIN link l ON l.link_id = c.link_id WHERE l.link_name = (?)", (resultSet, row) ->
@@ -144,6 +188,11 @@ public class JdbcLinkRepository implements LinkRepository {
                     resultSet.getString(NAME),
                     resultSet.getObject(CHECK,
                         OffsetDateTime.class),
-                    resultSet.getObject(UPDATE, OffsetDateTime.class)), amount);
+                    resultSet.getObject(UPDATE,
+                        OffsetDateTime.class),
+                    resultSet.getObject(COMMIT,
+                        OffsetDateTime.class),
+                    resultSet.getInt(ISSUE),
+                    resultSet.getString(TYPE)), amount);
     }
 }

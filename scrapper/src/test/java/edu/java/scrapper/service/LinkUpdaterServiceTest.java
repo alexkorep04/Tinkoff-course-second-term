@@ -20,9 +20,9 @@ public class LinkUpdaterServiceTest {
         LinkRepository linkRepository = mock(LinkRepository.class);
         GitHubLinkUpdater gitHubLinkUpdater = mock(GitHubLinkUpdater.class);
         StackOverflowLinkUpdater stackOverflowLinkUpdater = mock(StackOverflowLinkUpdater.class);
-        Link link1 = new Link(1L, "https://github.com/alexkorep04/Course", null, null);
-        Link link2 = new Link(2L, "https://stackoverflow.com/questions/1", null, null);
-        Link link3 = new Link(3L, "https://github.com/alexkorep04/Tinkoff-course-second-term", null, null);
+        Link link1 = new Link(1L, "https://github.com/alexkorep04/Course", null, null, null, 0, "GitHubLink");
+        Link link2 = new Link(2L, "https://stackoverflow.com/questions/1", null, null, null, 0, "GitHubLink");
+        Link link3 = new Link(3L, "https://github.com/alexkorep04/Tinkoff-course-second-term", null, null, null, 0, "StackOverflowLink");
         DefaultLinkUpdaterService linkUpdaterService = new DefaultLinkUpdaterService(linkRepository, gitHubLinkUpdater, stackOverflowLinkUpdater);
         when(linkRepository.findOldestLinks(3)).thenReturn(List.of(link1, link2, link3));
         when(gitHubLinkUpdater.supports(any())).thenReturn(true);
