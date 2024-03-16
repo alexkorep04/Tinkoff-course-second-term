@@ -139,7 +139,7 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         linkRepository.add(1L, "https://github.com/alexkorep04/Tinkoff-course-second-term");
         linkRepository.add(2L, "https://stackoverflow.com/questions/78155902/how-do-i-incrementally-migrate-from-osgi-to-a-spring-boot-monolith");
 
-        Optional<Link> link = linkRepository.findById(2L);
+        Optional<Link> link = linkRepository.findById(29L);
         List<Link> links = linkRepository.findAll();
         assertThat(link).isNotEmpty();
         assertThat("https://github.com/alexkorep04/Tinkoff-course-second-term").isEqualTo(link.get().getName());

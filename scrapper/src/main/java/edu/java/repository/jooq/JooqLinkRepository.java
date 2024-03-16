@@ -170,6 +170,7 @@ public class JooqLinkRepository implements LinkRepository {
         dslContext
             .update(Tables.LINK)
             .set(Tables.LINK.LAST_CHECK, newCheck)
+            .where(Tables.LINK.LINK_NAME.eq(name))
             .execute();
     }
 
@@ -179,6 +180,7 @@ public class JooqLinkRepository implements LinkRepository {
         dslContext
             .update(Tables.LINK)
             .set(Tables.LINK.LAST_UPDATE, update)
+            .where(Tables.LINK.LINK_NAME.eq(name))
             .execute();
     }
 
@@ -188,6 +190,7 @@ public class JooqLinkRepository implements LinkRepository {
         dslContext
             .update(Tables.LINK)
             .set(Tables.LINK.LAST_COMMIT, commit)
+            .where(Tables.LINK.LINK_NAME.eq(name))
             .execute();
     }
 
@@ -197,6 +200,7 @@ public class JooqLinkRepository implements LinkRepository {
         dslContext
             .update(Tables.LINK)
             .set(Tables.LINK.AMOUNT_ISSUES, amountOfPR)
+            .where(Tables.LINK.LINK_NAME.eq(name))
             .execute();
     }
 

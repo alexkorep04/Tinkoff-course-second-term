@@ -42,7 +42,8 @@ public class JooqChatRepository implements ChatRepository {
             if (chatsWithSameLink.isEmpty()) {
                 dslContext
                     .deleteFrom(Tables.LINK)
-                    .where(Tables.LINK.LINK_ID.eq(linkId));
+                    .where(Tables.LINK.LINK_ID.eq(linkId))
+                    .execute();
             }
         }
         return dslContext

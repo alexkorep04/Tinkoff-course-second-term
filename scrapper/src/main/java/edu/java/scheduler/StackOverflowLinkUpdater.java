@@ -37,8 +37,14 @@ public class StackOverflowLinkUpdater implements LinkUpdater {
     public int update(Link link) {
         String url = link.getName();
         String[] parts = url.split("/");
-        int question = Integer.parseInt(parts[parts.length - 2]);
-        StackOverflowResponse stackOverflowResponse = stackOverflowClient.fetchQuestion(question).block();
+        StackOverflowResponse stackOverflowResponse;
+        int question;
+        try {
+            question = Integer.parseInt(parts[parts.length - 2]);
+            stackOverflowResponse = stackOverflowClient.fetchQuestion(question).block();
+        } catch (Exception e) {
+            return 0;
+        }
         linkRepository.updateLastCheck(OffsetDateTime.now(ZoneId.of("UTC")), url);
         if (link.getLastUpdate() == null) {
             linkRepository.updateLastUpdate(stackOverflowResponse.getItems().getFirst().getLastActivityDate(), url);
