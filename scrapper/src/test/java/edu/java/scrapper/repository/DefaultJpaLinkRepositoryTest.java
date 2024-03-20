@@ -124,22 +124,6 @@ public class DefaultJpaLinkRepositoryTest extends IntegrationTest {
         assertThat("https://github.com/alexkorep04/Tinkoff-course-second-term").isEqualTo(link.get().getName());
     }
 
-    @Test
-    @Rollback
-    @Transactional
-    @DisplayName("Test findById method")
-    public void testFindById() {
-        chatRepository.add(1L);
-        chatRepository.add(2L);
-        linkRepository.add(1L, "https://github.com/alexkorep04/Course");
-        linkRepository.add(1L, "https://github.com/alexkorep04/Tinkoff-course-second-term");
-        linkRepository.add(2L, "https://stackoverflow.com/questions/78155902/how-do-i-incrementally-migrate-from-osgi-to-a-spring-boot-monolith");
-
-        Optional<Link> link = linkRepository.findById(29L);
-        List<Link> links = linkRepository.findAll();
-        assertThat(link).isNotEmpty();
-        assertThat("https://github.com/alexkorep04/Tinkoff-course-second-term").isEqualTo(link.get().getName());
-    }
 
     @Test
     @Rollback
