@@ -5,7 +5,6 @@ import edu.java.repository.LinkRepository;
 import edu.java.scheduler.GitHubLinkUpdater;
 import edu.java.scheduler.StackOverflowLinkUpdater;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +14,7 @@ public class DefaultLinkUpdaterService implements LinkUpdaterService {
     private final StackOverflowLinkUpdater stackOverflowLinkUpdater;
 
     public DefaultLinkUpdaterService(
-        @Qualifier("jooqLinkRepository") LinkRepository linkRepository,
+        LinkRepository linkRepository,
         GitHubLinkUpdater gitHubLinkUpdater,
         StackOverflowLinkUpdater stackOverflowLinkUpdater
     ) {

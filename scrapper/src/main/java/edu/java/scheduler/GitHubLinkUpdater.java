@@ -9,7 +9,6 @@ import edu.java.repository.LinkRepository;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +19,7 @@ public class GitHubLinkUpdater implements LinkUpdater {
     private final static String IN = " in ";
 
     public GitHubLinkUpdater(BotClient botClient,
-        @Qualifier("jooqLinkRepository") LinkRepository linkRepository, GitHubClient gitHubClient) {
+        LinkRepository linkRepository, GitHubClient gitHubClient) {
         this.botClient = botClient;
         this.linkRepository = linkRepository;
         this.gitHubClient = gitHubClient;

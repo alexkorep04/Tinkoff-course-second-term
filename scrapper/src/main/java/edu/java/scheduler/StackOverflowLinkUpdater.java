@@ -9,7 +9,6 @@ import edu.java.repository.LinkRepository;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +19,7 @@ public class StackOverflowLinkUpdater implements LinkUpdater {
 
     public StackOverflowLinkUpdater(
         BotClient botClient,
-        @Qualifier("jooqLinkRepository") LinkRepository linkRepository,
+        LinkRepository linkRepository,
         StackOverflowClient stackOverflowClient
     ) {
         this.botClient = botClient;
