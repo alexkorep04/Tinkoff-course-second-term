@@ -20,6 +20,7 @@ public class ScrapperExceptionController {
     private static final String NOT_FOUND = "404 NOT FOUND";
     private static final String WRONG_PARAMETERS = "Wrong parameters!";
     private static final String LINK_NOT_FOUND = "Link not found!";
+    private static final String CHAT_NOT_FOUND = "Chat not found!";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -64,6 +65,7 @@ public class ScrapperExceptionController {
             exception.getMessage(),
             getStackTrace(exception));
     }
+
 
     @ExceptionHandler(HandlerMethodValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
