@@ -9,22 +9,46 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
+import java.time.Duration;
+import java.util.List;
+import java.util.function.Predicate;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class StackOverflowTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule();
     private StackOverflowClient stackOverflowClient;
+    private Predicate<Throwable> doFilter(List<Integer> codes) {
+        return exception -> {
+            if (exception instanceof HttpClientErrorException) {
+                int statusCodeValue = ((HttpClientErrorException) exception).getStatusCode().value();
+                return codes.contains(statusCodeValue);
+            } else {
+                return false;
+            }
+        };
+    }
+
+    private Retry getConstantRetry() {
+        Predicate<Throwable> filter = doFilter(List.of(500));
+        return Retry.fixedDelay(1,
+                Duration.ofMillis(1000))
+            .filter(filter);
+    }
 
     @Before
     public void init() {
         String baseUrl = wireMockRule.baseUrl();
-        stackOverflowClient = new DefaultStackOverflowClient(baseUrl);
+        Retry retry = getConstantRetry();
+        stackOverflowClient = new DefaultStackOverflowClient(retry, baseUrl);
     }
 
     @Test

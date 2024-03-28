@@ -5,23 +5,27 @@ import edu.java.dto.response.ApiErrorResponse;
 import edu.java.entity.BaseURL;
 import edu.java.exception.UpdateAlreadyExistsException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 public class BotClient {
     private final WebClient webClient;
+    private final Retry retry;
     private static final String UPDATE_EXCEPTION = "edu.java.exception.UpdateAlreadyExistsException";
     private static final String NOT_VALID_DATA = "Not valid data!";
     private static final String UPDATES = "/updates";
 
-
-    public BotClient(String baseURL) {
+    public BotClient(Retry retry, String baseURL) {
         this.webClient = WebClient.create(baseURL);
+        this.retry = retry;
     }
 
-    public BotClient() {
-        this(BaseURL.LOCAL.getUrl());
+    public BotClient(Retry retry) {
+        this(retry, BaseURL.LOCAL.getUrl());
     }
 
     public Mono<String> sendUpdate(LinkUpdateRequest linkUpdateRequest) {
@@ -37,6 +41,11 @@ public class BotClient {
                         return Mono.error(new RuntimeException(NOT_VALID_DATA));
                     }
                 }))
+            .onStatus(HttpStatusCode::is5xxServerError, response -> response.createException()
+                .flatMap(error -> {
+                    return Mono.error(new HttpClientErrorException(response.statusCode()));
+                })
+            )
             .bodyToMono(String.class);
     }
 }

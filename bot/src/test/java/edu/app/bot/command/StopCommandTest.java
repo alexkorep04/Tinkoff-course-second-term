@@ -10,6 +10,8 @@ import edu.java.bot.command.StopCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
+import java.time.Duration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -18,8 +20,8 @@ public class StopCommandTest {
     @Test
     @DisplayName("Test name and description")
     public void testNameAndDescription() {
-        Command command = new StopCommand(new ScrapperClient());
-
+        Retry retry = Retry.fixedDelay(2, Duration.ofSeconds(1));
+        Command command = new StopCommand(new ScrapperClient(retry));
         assertThat(command.description()).isEqualTo("Stop tracking all links and delete chat");
         assertThat(command.command()).isEqualTo("/stop");
     }

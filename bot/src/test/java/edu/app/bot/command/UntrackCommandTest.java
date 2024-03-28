@@ -13,7 +13,9 @@ import edu.java.bot.exception.NoResourceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 import java.net.URI;
+import java.time.Duration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -22,8 +24,8 @@ public class UntrackCommandTest {
     @Test
     @DisplayName("Test name and description")
     public void testNameAndDescription() {
-        Command command = new UntrackCommand(new ScrapperClient());
-
+        Retry retry = Retry.fixedDelay(2, Duration.ofSeconds(1));
+        Command command = new UntrackCommand(new ScrapperClient(retry));
         assertThat(command.description()).isEqualTo("Stop tracking the website page");
         assertThat(command.command()).isEqualTo("/untrack");
     }

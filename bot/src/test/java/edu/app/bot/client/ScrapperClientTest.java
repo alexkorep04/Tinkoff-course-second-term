@@ -7,6 +7,9 @@ import edu.java.bot.dto.request.RemoveLinkRequest;
 import edu.java.bot.dto.response.LinkResponse;
 import edu.java.bot.dto.response.ListsLinkResponse;
 import java.net.URI;
+import java.time.Duration;
+import java.util.List;
+import java.util.function.Predicate;
 import edu.java.bot.exception.NoResourceException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,7 +17,9 @@ import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -30,9 +35,28 @@ public class ScrapperClientTest {
     public WireMockRule wireMockRule = new WireMockRule();
     private ScrapperClient scrapperClient;
 
+    private Predicate<Throwable> doFilter(List<Integer> codes) {
+        return exception -> {
+            if (exception instanceof HttpClientErrorException) {
+                int statusCodeValue = ((HttpClientErrorException) exception).getStatusCode().value();
+                return codes.contains(statusCodeValue);
+            } else {
+                return false;
+            }
+        };
+    }
+
+    private Retry getConstantRetry() {
+        Predicate<Throwable> filter = doFilter(List.of(500));
+        return Retry.fixedDelay(1,
+                Duration.ofMillis(1000))
+            .filter(filter);
+    }
+
     @Before
     public void init() {
-        scrapperClient = new ScrapperClient("http://localhost:8080");
+        Retry retry = getConstantRetry();
+        scrapperClient = new ScrapperClient(retry, "http://localhost:8080");
     }
 
     @Test
