@@ -7,7 +7,11 @@ import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.ExhaustedRetryException;
 import org.springframework.web.client.HttpClientErrorException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reactor.util.retry.Retry;
 
 @Configuration
@@ -44,9 +48,29 @@ public class RetryConfiguration {
 
     private Retry getLinearRetry() {
         Predicate<Throwable> filter = doFilter(applicationConfig.retry().statuses());
-        return Retry.backoff(applicationConfig.retry().attempts(),
-                Duration.ofMillis(applicationConfig.retry().delay()))
-            .filter(filter);
+        Duration delay = Duration.ofMillis(applicationConfig.retry().delay());
+        return Retry.from(signal -> Flux.deferContextual(
+                cv -> signal.contextWrite(cv)
+                    .concatMap(retryWhenState -> {
+                        Retry.RetrySignal copy = retryWhenState.copy();
+                        Throwable currentFailure = copy.failure();
+                        long iteration = copy.totalRetries();
+                        if (currentFailure == null) {
+                            return Mono.error(
+                                new IllegalStateException("Retry.RetrySignal#failure() not expected to be null")
+                            );
+                        }
+                        if (!filter.test(currentFailure)) {
+                            return Mono.error(currentFailure);
+                        }
+                        if (iteration >= applicationConfig.retry().attempts()) {
+                            return Mono.error(new ExhaustedRetryException("Retry failed on iteration " + iteration));
+                        }
+                        Duration nextBackoff = delay.multipliedBy(2*iteration);
+                        return Mono.delay(nextBackoff, Schedulers.parallel());
+                    })
+            )
+        );
     }
 
     @Bean
