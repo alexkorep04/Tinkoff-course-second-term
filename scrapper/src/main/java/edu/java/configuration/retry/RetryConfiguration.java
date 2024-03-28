@@ -66,7 +66,7 @@ public class RetryConfiguration {
                         if (iteration >= applicationConfig.retry().attempts()) {
                             return Mono.error(new ExhaustedRetryException("Retry failed on iteration " + iteration));
                         }
-                        Duration nextBackoff = delay.multipliedBy(2*iteration);
+                        Duration nextBackoff = delay.multipliedBy(2 * iteration);
                         return Mono.delay(nextBackoff, Schedulers.parallel());
                     })
             )
