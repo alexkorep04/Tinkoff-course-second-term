@@ -11,6 +11,8 @@ import edu.java.bot.exception.ChatAlreadyExistsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
+import java.time.Duration;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,7 +21,8 @@ public class StartCommandTest {
     @Test
     @DisplayName("Test name and description")
     public void testNameAndDescription() {
-        Command command = new StartCommand(new ScrapperClient());
+        Retry retry = Retry.fixedDelay(2, Duration.ofSeconds(1));
+        Command command = new StartCommand(new ScrapperClient(retry));
 
         assertThat(command.description()).isEqualTo("Start the bot");
         assertThat(command.command()).isEqualTo("/start");

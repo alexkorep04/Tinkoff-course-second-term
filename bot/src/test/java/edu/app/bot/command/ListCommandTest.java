@@ -12,7 +12,9 @@ import edu.java.bot.dto.response.ListsLinkResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 import java.net.URI;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,8 +25,8 @@ public class ListCommandTest {
     @Test
     @DisplayName("Test name and description")
     public void testNameAndDescription() {
-        Command command = new ListCommand(new ScrapperClient());
-
+        Retry retry = Retry.fixedDelay(2, Duration.ofSeconds(1));
+        Command command = new ListCommand(new ScrapperClient(retry));
         assertThat(command.description()).isEqualTo("Show all tracked links");
         assertThat(command.command()).isEqualTo("/list");
     }

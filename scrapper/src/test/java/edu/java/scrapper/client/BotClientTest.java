@@ -9,24 +9,47 @@ import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
+import java.util.function.Predicate;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 public class BotClientTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule();
     private BotClient botClient;
+    private Predicate<Throwable> doFilter(List<Integer> codes) {
+        return exception -> {
+            if (exception instanceof HttpClientErrorException) {
+                int statusCodeValue = ((HttpClientErrorException) exception).getStatusCode().value();
+                return codes.contains(statusCodeValue);
+            } else {
+                return false;
+            }
+        };
+    }
+
+    private Retry getConstantRetry() {
+        Predicate<Throwable> filter = doFilter(List.of(500));
+        return Retry.fixedDelay(1,
+                Duration.ofMillis(1000))
+            .filter(filter);
+    }
 
     @Before
     public void init() {
-        botClient = new BotClient("http://localhost:8080");
+        Retry retry = getConstantRetry();
+        botClient = new BotClient( retry, "http://localhost:8080");
     }
 
     @Test

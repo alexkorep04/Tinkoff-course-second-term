@@ -8,20 +8,47 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.client.HttpClientErrorException;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.function.Predicate;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class GitHubTest {
+
     @Rule
     public WireMockRule wireMockRule = new WireMockRule();
     private GitHubClient gitHubClient;
 
+    private Predicate<Throwable> doFilter(List<Integer> codes) {
+        return exception -> {
+            if (exception instanceof HttpClientErrorException) {
+                int statusCodeValue = ((HttpClientErrorException) exception).getStatusCode().value();
+                return codes.contains(statusCodeValue);
+            } else {
+                return false;
+            }
+        };
+    }
+
+    private Retry getConstantRetry() {
+        Predicate<Throwable> filter = doFilter(List.of(500));
+        return Retry.fixedDelay(1,
+                Duration.ofMillis(1000))
+            .filter(filter);
+    }
+
     @Before
     public void init() {
         String baseUrl = wireMockRule.baseUrl();
-        gitHubClient = new DefaultGitHubClient(baseUrl);
+        Retry retry = getConstantRetry();
+        gitHubClient = new DefaultGitHubClient(retry, baseUrl);
     }
 
     @Test
@@ -54,5 +81,4 @@ public class GitHubTest {
         assertThat(OffsetDateTime.parse("2022-01-01T00:00:00Z")).isEqualTo(response.getPushedTime());
         assertThat(1).isEqualTo(response.getIssuesCount());
     }
-
 }

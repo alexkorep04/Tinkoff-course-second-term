@@ -12,12 +12,16 @@ import edu.java.bot.exception.NoChatException;
 import edu.java.bot.exception.NoResourceException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 public class ScrapperClient {
     private final WebClient webClient;
+    private final Retry retry;
     private final static String TG_CHAT = "/tg-chat/";
     private final static String LINKS = "links";
     private final static String HEADER = "Tg-Chat-Id";
@@ -26,12 +30,13 @@ public class ScrapperClient {
     private final static String METHOD_VALIDATION_EXCEPTION
         = "org.springframework.web.method.annotation.HandlerMethodValidationException";
 
-    public ScrapperClient(String baseURL) {
+    public ScrapperClient(Retry retry, String baseURL) {
         this.webClient = WebClient.create(baseURL);
+        this.retry = retry;
     }
 
-    public ScrapperClient() {
-        this(BaseURL.LOCAL.getUrl());
+    public ScrapperClient(Retry retry) {
+        this(retry, BaseURL.LOCAL.getUrl());
     }
 
     public Mono<String> registerChat(long id) {
@@ -47,7 +52,13 @@ public class ScrapperClient {
                     return Mono.error(new ChatAlreadyExistsException(errorResponse.getExceptionMessage()));
                 }
             }))
-            .bodyToMono(String.class);
+            .onStatus(HttpStatusCode::is5xxServerError, response -> response.createException()
+                .flatMap(error -> {
+                    return Mono.error(new HttpClientErrorException(response.statusCode()));
+                })
+            )
+            .bodyToMono(String.class)
+            .retryWhen(retry);
     }
 
     public Mono<String> deleteChat(long id) {
@@ -65,7 +76,13 @@ public class ScrapperClient {
                 }))
             .onStatus(HttpStatus.NOT_FOUND::equals, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(errorResponse -> Mono.error(new NoResourceException(errorResponse.getExceptionMessage()))))
-            .bodyToMono(String.class);
+            .onStatus(HttpStatusCode::is5xxServerError, response -> response.createException()
+                .flatMap(error -> {
+                    return Mono.error(new HttpClientErrorException(response.statusCode()));
+                })
+            )
+            .bodyToMono(String.class)
+            .retryWhen(retry);
     }
 
     public Mono<LinkResponse> addLink(long id, AddLinkRequest addLinkRequest) {
@@ -84,7 +101,13 @@ public class ScrapperClient {
                         return Mono.error(new NoChatException(errorResponse.getExceptionMessage()));
                     }
                 }))
-            .bodyToMono(LinkResponse.class);
+            .onStatus(HttpStatusCode::is5xxServerError, response -> response.createException()
+                .flatMap(error -> {
+                    return Mono.error(new HttpClientErrorException(response.statusCode()));
+                })
+            )
+            .bodyToMono(LinkResponse.class)
+            .retryWhen(retry);
     }
 
     public Mono<LinkResponse> deleteLink(long id, RemoveLinkRequest removeLinkRequest) {
@@ -103,7 +126,13 @@ public class ScrapperClient {
                 }))
             .onStatus(HttpStatus.NOT_FOUND::equals, response -> response.bodyToMono(ApiErrorResponse.class)
                 .flatMap(errorResponse -> Mono.error(new NoResourceException(errorResponse.getExceptionMessage()))))
-            .bodyToMono(LinkResponse.class);
+            .onStatus(HttpStatusCode::is5xxServerError, response -> response.createException()
+                .flatMap(error -> {
+                    return Mono.error(new HttpClientErrorException(response.statusCode()));
+                })
+            )
+            .bodyToMono(LinkResponse.class)
+            .retryWhen(retry);
     }
 
     public Mono<ListsLinkResponse> getLinks(long id) {
@@ -119,6 +148,12 @@ public class ScrapperClient {
                         return Mono.error(new NoChatException(errorResponse.getExceptionMessage()));
                     }
                 }))
-            .bodyToMono(ListsLinkResponse.class);
+            .onStatus(HttpStatusCode::is5xxServerError, response -> response.createException()
+                .flatMap(error -> {
+                    return Mono.error(new HttpClientErrorException(response.statusCode()));
+                })
+            )
+            .bodyToMono(ListsLinkResponse.class)
+            .retryWhen(retry);
     }
 }
