@@ -7,6 +7,7 @@ import edu.java.entity.GitHubResponse;
 import edu.java.repository.LinkRepository;
 import edu.java.repository.jdbc.JdbcLinkRepository;
 import edu.java.scheduler.GitHubLinkUpdater;
+import edu.java.service.SendService;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import reactor.core.publisher.Mono;
@@ -25,8 +26,8 @@ public class GitHubSchedulerTest {
     public void testSupports() {
         GitHubClient githubClient = mock(GitHubClient.class);
         LinkRepository linkRepository = mock(JdbcLinkRepository.class);
-        BotClient botWebClient = mock(BotClient.class);
-        GitHubLinkUpdater gitHubLinkUpdater = new GitHubLinkUpdater(botWebClient, linkRepository, githubClient);
+        SendService sendService = mock(SendService.class);
+        GitHubLinkUpdater gitHubLinkUpdater = new GitHubLinkUpdater(sendService, linkRepository, githubClient);
 
         assertThat(gitHubLinkUpdater.supports("https://github.com/alexkorep04/Course")).isTrue();
         assertThat(gitHubLinkUpdater.supports("https://vk.com")).isFalse();
@@ -37,7 +38,7 @@ public class GitHubSchedulerTest {
     public void testUpdateFirstTime() {
         GitHubClient githubClient = mock(GitHubClient.class);
         LinkRepository linkRepository = mock(JdbcLinkRepository.class);
-        BotClient botWebClient = mock(BotClient.class);
+        SendService sendService = mock(SendService.class);
         Link link = new Link(1L, "https://github.com/alexkorep04/Course", OffsetDateTime.MIN,
             null, null, 0, "GitHubLink");
         GitHubResponse gitHubResponse = new GitHubResponse(1, "Course", "https://github.com/alexkorep04/Course",
@@ -45,7 +46,7 @@ public class GitHubSchedulerTest {
         String account = "alexkorep04";
         String repository = "Course";
         when(githubClient.fetchRepository(account, repository)).thenReturn(Mono.just(gitHubResponse));
-        GitHubLinkUpdater gitHubLinkUpdater = new GitHubLinkUpdater(botWebClient, linkRepository, githubClient);
+        GitHubLinkUpdater gitHubLinkUpdater = new GitHubLinkUpdater(sendService, linkRepository, githubClient);
 
         assertThat(0L).isEqualTo(gitHubLinkUpdater.update(link));
         verify(githubClient).fetchRepository(account, repository);
@@ -56,7 +57,7 @@ public class GitHubSchedulerTest {
     public void testNormalUpdate() {
         GitHubClient githubClient = mock(GitHubClient.class);
         LinkRepository linkRepository = mock(JdbcLinkRepository.class);
-        BotClient botWebClient = mock(BotClient.class);
+        SendService sendService = mock(SendService.class);
         Link link = new Link(1L, "https://github.com/alexkorep04/Course", OffsetDateTime.MIN,
             OffsetDateTime.now(), OffsetDateTime.MIN, 0, "GitHubLink");
         GitHubResponse gitHubResponse = new GitHubResponse(1, "Course", "https://github.com/alexkorep04/Course",
@@ -65,8 +66,7 @@ public class GitHubSchedulerTest {
         String repository = "Course";
         when(githubClient.fetchRepository(account, repository)).thenReturn(Mono.just(gitHubResponse));
         when(linkRepository.findChatsByLink("https://github.com/alexkorep04/Course")).thenReturn(List.of(2L));
-        when(botWebClient.sendUpdate(any())).thenReturn(Mono.just("Обновление обработано"));
-        GitHubLinkUpdater gitHubLinkUpdater = new GitHubLinkUpdater(botWebClient, linkRepository, githubClient);
+        GitHubLinkUpdater gitHubLinkUpdater = new GitHubLinkUpdater(sendService, linkRepository, githubClient);
 
         assertThat(2L).isEqualTo(gitHubLinkUpdater.update(link));
         verify(githubClient).fetchRepository(account, repository);

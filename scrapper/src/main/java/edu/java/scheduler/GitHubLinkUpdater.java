@@ -1,11 +1,11 @@
 package edu.java.scheduler;
 
-import edu.java.client.BotClient;
 import edu.java.client.GitHubClient;
 import edu.java.dto.Link;
 import edu.java.dto.request.LinkUpdateRequest;
 import edu.java.entity.GitHubResponse;
 import edu.java.repository.LinkRepository;
+import edu.java.service.SendService;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GitHubLinkUpdater implements LinkUpdater {
-    private final BotClient botClient;
+    private final SendService sendService;
     private final LinkRepository linkRepository;
     private final GitHubClient gitHubClient;
     private final static String IN = " in ";
 
-    public GitHubLinkUpdater(BotClient botClient,
+    public GitHubLinkUpdater(SendService sendService,
         LinkRepository linkRepository, GitHubClient gitHubClient) {
-        this.botClient = botClient;
+        this.sendService = sendService;
         this.linkRepository = linkRepository;
         this.gitHubClient = gitHubClient;
     }
@@ -65,7 +65,7 @@ public class GitHubLinkUpdater implements LinkUpdater {
             LinkUpdateRequest linkUpdateRequest =
                 new LinkUpdateRequest(link.getId(), URI.create(link.getName()),
                     description, linkRepository.findChatsByLink(link.getName()));
-            botClient.sendUpdate(linkUpdateRequest).block();
+            sendService.update(linkUpdateRequest);
             return 1;
         }
         return 0;
@@ -84,7 +84,7 @@ public class GitHubLinkUpdater implements LinkUpdater {
                 LinkUpdateRequest linkUpdateRequest =
                     new LinkUpdateRequest(link.getId(), URI.create(link.getName()),
                         description, linkRepository.findChatsByLink(link.getName()));
-                botClient.sendUpdate(linkUpdateRequest).block();
+                sendService.update(linkUpdateRequest);
                 return 1;
             }
         }
@@ -102,7 +102,7 @@ public class GitHubLinkUpdater implements LinkUpdater {
             LinkUpdateRequest linkUpdateRequest =
                 new LinkUpdateRequest(link.getId(), URI.create(link.getName()),
                     description, linkRepository.findChatsByLink(link.getName()));
-            botClient.sendUpdate(linkUpdateRequest).block();
+            sendService.update(linkUpdateRequest);
             return 1;
         }
         return 0;

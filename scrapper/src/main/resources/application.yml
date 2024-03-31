@@ -4,11 +4,15 @@ app:
     interval: PT10S
     force-check-delay: PT10S
   database-access-type: jpa
+  useQueue: false
   retry:
     retryType: EXPONENTIAL
     statuses: [500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 520]
     attempts: 3
     delay: 2000
+  kafka:
+    bootstrap-servers: localhost:9092
+    topicName: "updatesForBot"
 spring:
   liquibase:
     enabled: false
@@ -27,6 +31,7 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+
 server:
   port: 8080
 

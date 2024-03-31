@@ -2,10 +2,15 @@ app:
   telegram-token: ${TOKEN}
   retry:
     retryType: EXPONENTIAL
-    statuses: [500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 520 ]
+    statuses: [500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 520]
     attempts: 3
     delay: 2000
-
+  kafka:
+    bootstrap-servers: localhost:9092
+    topicName: "updatesForBot"
+    consumer:
+      group-id: "botMessages"
+    error-topic-name: errorBotMessages_dlq
 spring:
   application:
     name: bot
