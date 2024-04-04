@@ -1,13 +1,13 @@
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.4.4
+    image: wurstmeister/zookeeper:latest
     container_name: zookeeper
     ports:
       - "2181:2181"
     networks:
       - backend
   kafka:
-    image: confluentinc/cp-kafka:7.4.4
+    image: wurstmeister/kafka:latest
     container_name: kafka
     ports:
       - "9092:9092"
