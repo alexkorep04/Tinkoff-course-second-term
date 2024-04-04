@@ -13,11 +13,23 @@ public record ApplicationConfig(
     @NotEmpty
     String telegramToken,
     @NotNull
-    Retry retry
+    Retry retry,
+
+    @NotNull
+    Kafka kafka
 ) {
 
     public record Retry(@NotNull RetryType retryType,
                         @NotNull @NotEmpty List<Integer> statuses,
                         @NotNull int attempts,
                         @NotNull long delay) {}
+
+    public record Kafka(@NotNull String bootstrapServers,
+                        @NotNull String topicName,
+                        @NotNull Consumer consumer,
+                        @NotNull String errorTopicName) {
+
+        public record Consumer(@NotNull String groupId) {
+        }
+    }
 }

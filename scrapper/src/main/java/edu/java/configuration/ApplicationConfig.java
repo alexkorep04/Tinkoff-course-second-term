@@ -16,7 +16,11 @@ public record ApplicationConfig(
     @NotNull
     String databaseAccessType,
     @NotNull
-    Retry retry
+    boolean useQueue,
+    @NotNull
+    Retry retry,
+    @NotNull
+    Kafka kafka
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
     }
@@ -25,5 +29,9 @@ public record ApplicationConfig(
                         @NotNull @NotEmpty List<Integer> statuses,
                         @NotNull int attempts,
                         @NotNull long delay) {}
+
+    public record Kafka(@NotNull String bootstrapServers,
+                        @NotNull String topicName) {
+    }
 
 }

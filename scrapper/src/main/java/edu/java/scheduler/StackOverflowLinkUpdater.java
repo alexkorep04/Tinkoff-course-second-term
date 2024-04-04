@@ -1,11 +1,11 @@
 package edu.java.scheduler;
 
-import edu.java.client.BotClient;
 import edu.java.client.StackOverflowClient;
 import edu.java.dto.Link;
 import edu.java.dto.request.LinkUpdateRequest;
 import edu.java.entity.StackOverflowResponse;
 import edu.java.repository.LinkRepository;
+import edu.java.service.SendService;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -13,16 +13,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StackOverflowLinkUpdater implements LinkUpdater {
-    private final BotClient botClient;
+    private final SendService sendService;
     private final LinkRepository linkRepository;
     private final StackOverflowClient stackOverflowClient;
 
     public StackOverflowLinkUpdater(
-        BotClient botClient,
+        SendService sendService,
         LinkRepository linkRepository,
         StackOverflowClient stackOverflowClient
     ) {
-        this.botClient = botClient;
+        this.sendService = sendService;
         this.linkRepository = linkRepository;
         this.stackOverflowClient = stackOverflowClient;
     }
@@ -52,7 +52,7 @@ public class StackOverflowLinkUpdater implements LinkUpdater {
             LinkUpdateRequest
                 linkUpdateRequest = new LinkUpdateRequest(link.getId(), URI.create(url),
                 "Update on StackOverflow question  " + question + "\n" + url, linkRepository.findChatsByLink(url));
-            botClient.sendUpdate(linkUpdateRequest).block();
+            sendService.update(linkUpdateRequest);
             return 1;
         }
         return 0;
