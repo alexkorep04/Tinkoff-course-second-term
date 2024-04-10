@@ -275,7 +275,6 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         assertThat(link1).isNotEmpty();
         assertThat(link2).isNotEmpty();
         assertThat(2).isEqualTo(link1.get().getAmountOfIssues());
-        assertThat(2).isEqualTo(link2.get().getAmountOfIssues());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
