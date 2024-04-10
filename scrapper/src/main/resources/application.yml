@@ -45,9 +45,9 @@ management:
     port: 8081
   endpoints:
     web:
-      base-path: /
       path-mapping:
         prometheus: /metrics
+      base-path: /
       exposure:
         include: info, health, prometheus
   endpoint:
@@ -61,6 +61,7 @@ management:
     metrics:
       export:
         enabled: true
+        step: 30s
   metrics:
     tags:
       application: ${spring.application.name}
