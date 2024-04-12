@@ -1,4 +1,3 @@
 FROM openjdk:21
-WORKDIR application
-COPY . /application
-CMD ["java", "-jar", "target/bot.jar"]
+COPY target/bot.jar bot.jar
+CMD ["java", "-jar", "bot.jar"]

@@ -1,4 +1,3 @@
 FROM openjdk:21
-WORKDIR application
-COPY . /application
-CMD ["java", "-jar", "target/scrapper.jar"]
+COPY target/scrapper.jar scrapper.jar
+CMD ["java", "-jar", "scrapper.jar"]
