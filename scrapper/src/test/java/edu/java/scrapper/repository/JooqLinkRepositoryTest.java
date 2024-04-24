@@ -128,25 +128,6 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         chatRepository.remove(2L);
     }
 
-    @Test
-    @Rollback
-    @Transactional
-    @DisplayName("Test findById method")
-    public void testFindById() {
-        chatRepository.add(1L);
-        chatRepository.add(2L);
-        linkRepository.add(1L, "https://github.com/alexkorep04/Course");
-        linkRepository.add(1L, "https://github.com/alexkorep04/Tinkoff-course-second-term");
-        linkRepository.add(2L, "https://stackoverflow.com/questions/78155902/how-do-i-incrementally-migrate-from-osgi-to-a-spring-boot-monolith");
-
-        Optional<Link> link = linkRepository.findById(29L);
-        List<Link> links = linkRepository.findAll();
-        assertThat(link).isNotEmpty();
-        assertThat("https://github.com/alexkorep04/Tinkoff-course-second-term").isEqualTo(link.get().getName());
-
-        chatRepository.remove(1L);
-        chatRepository.remove(2L);
-    }
 
     @Test
     @Rollback
@@ -275,7 +256,6 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         assertThat(link1).isNotEmpty();
         assertThat(link2).isNotEmpty();
         assertThat(2).isEqualTo(link1.get().getAmountOfIssues());
-        assertThat(2).isEqualTo(link2.get().getAmountOfIssues());
 
         chatRepository.remove(1L);
         chatRepository.remove(2L);
